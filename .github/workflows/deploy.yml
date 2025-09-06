@@ -47,19 +47,15 @@ jobs:
       # 7️⃣ Deploy Docker image on Pi via VPS
       - name: Deploy on Pi via VPS
         run: |
-          # Enable debug to see errors
           set -x
       
-          # Prepare SSH key
           mkdir -p ~/.ssh
           printf "%s\n" "${{ secrets.PI_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
       
-          # Add known hosts to avoid host verification prompts
+          # Only scan VPS, skip Pi
           ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
-          ssh-keyscan -H ${{ secrets.PI_HOST }} >> ~/.ssh/known_hosts
       
-          # Pull and deploy the Docker image on the Pi via VPS
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
               -J root@${{ secrets.VPS_HOST }} \
               ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "
