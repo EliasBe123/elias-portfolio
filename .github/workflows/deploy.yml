@@ -52,6 +52,9 @@ jobs:
           # 1️⃣ Start SSH agent and add private key
           eval "$(ssh-agent -s)"
           echo "${{ secrets.PI_SSH_KEY }}" | tr -d '\r' | ssh-add -
+          eval "$(ssh-agent -s)"
+          echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '\r' | ssh-add -
+
           
           # 2️⃣ Prepare SSH directory and known_hosts for VPS
           mkdir -p ~/.ssh
