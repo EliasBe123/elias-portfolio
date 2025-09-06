@@ -64,7 +64,7 @@ jobs:
           ssh -A -o StrictHostKeyChecking=no -J deploy@$VPS_HOST $PI_USER@$PI_HOST "echo Connected to Pi"
       
           echo "Copying docker-compose.yml to Pi..."
-          scp -o StrictHostKeyChecking=no -J deploy@$VPS_HOST ./apps/web/docker-compose.yml $PI_USER@$PI_HOST:~/deploy/docker-compose.yml
+          scp -o StrictHostKeyChecking=no -J deploy@$VPS_HOST ./infra/pi/docker-compose.yml $PI_USER@$PI_HOST:~/deploy/docker-compose.yml
       
           echo "Deploying Docker image on Pi..."
           ssh -A -o StrictHostKeyChecking=no -J deploy@$VPS_HOST $PI_USER@$PI_HOST "
