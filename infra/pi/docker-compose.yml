@@ -1,6 +1,6 @@
 services:
   app:
-    image: ghcr.io/EliasBe123/elias-portfolio:latest
+    image: eliasbe123/elias-portfolio:latest
     ports:
       - "3000:3000"
     restart: unless-stopped
