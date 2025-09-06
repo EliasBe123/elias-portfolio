@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node
+      # 2️⃣ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -35,35 +35,24 @@ jobs:
         working-directory: apps/web
         run: tar -czf build.tar.gz dist/
 
-      # 6️⃣ Copy build to VPS
-      - name: Copy build to VPS
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: root
-          key: ${{ secrets.VPS_SSH_KEY }}
-          source: apps/web/build.tar.gz
-          target: ~/deploy/
+      # 6️⃣ Copy build to Pi via VPS jump host
+      - name: Copy build to Pi
+        run: |
+          scp -o "ProxyJump root@${{ secrets.VPS_HOST }}" \
+              apps/web/build.tar.gz \
+              ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }}:~/deploy/
 
-      # 7️⃣ SSH into VPS and deploy to Pi
-      - name: Deploy on Pi via VPS
-        uses: appleboy/ssh-action@v0.1.10
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: root
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            # Ensure deploy folder exists on VPS
-            mkdir -p ~/deploy
-
-            # Copy tarball from VPS to Pi
-            ssh -i ~/.ssh/ci_deploy_pi -o StrictHostKeyChecking=no ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "mkdir -p ~/deploy"
-            scp -i ~/.ssh/ci_deploy_pi -o StrictHostKeyChecking=no ~/deploy/build.tar.gz ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }}:~/deploy/
-
-            # Extract and run Docker on Pi
-            ssh -i ~/.ssh/ci_deploy_pi -o StrictHostKeyChecking=no ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "
+      # 7️⃣ SSH into Pi, clean old build, and deploy
+      - name: Deploy on Pi
+        run: |
+          ssh -o "ProxyJump root@${{ secrets.VPS_HOST }}" \
+              ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "
+              mkdir -p ~/deploy &&
+              rm -rf ~/deploy/dist &&
               cd ~/deploy &&
               tar -xzf build.tar.gz &&
               docker compose down &&
               docker compose up -d --build
-            "
+          "
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.PI_SSH_KEY }}
