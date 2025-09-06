@@ -14,64 +14,57 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Set up Node.js
+      # 2️⃣ Set up Node.js (needed for npm build)
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # 3️⃣ Build Docker image
-      - name: Build Docker image
-        run: |
-          docker build -t eliasbe123/elias-portfolio:latest apps/web
-
-      # 4️⃣ Log in to Docker Hub
+      # 3️⃣ Log in to Docker Hub
       - name: Docker Hub login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 5️⃣ Push Docker image to Docker Hub
-      - name: Push Docker image
+      # 4️⃣ Build and push multi-arch Docker image
+      - name: Build and push multi-arch Docker image
         run: |
-          docker push eliasbe123/elias-portfolio:latest
+          docker buildx create --use
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t eliasbe123/elias-portfolio:latest \
+            ./apps/web \
+            --push
 
-      # 6️⃣ Deploy to Pi via VPS
-      - name: Deploy on Pi via VPS
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          PI_HOST: ${{ secrets.PI_HOST }}
-          PI_USER: ${{ secrets.PI_USER }}
+      # 5️⃣ Add VPS and Pi host keys to known_hosts
+      - name: Add SSH known hosts
         run: |
-          set -euo pipefail
-      
-          echo "Starting SSH agent..."
-          eval "$(ssh-agent -s)"
-      
-          # Add keys
-          echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '\r' | ssh-add -
-          echo "${{ secrets.PI_SSH_KEY }}" | tr -d '\r' | ssh-add -
-      
-          # Ensure known_hosts exists
           mkdir -p ~/.ssh
-          touch ~/.ssh/known_hosts
-      
-          echo "Testing connection to VPS..."
-          ssh -o StrictHostKeyChecking=no deploy@$VPS_HOST "echo Connected to VPS"
-      
-          echo "Testing connection to Pi via VPS..."
-          ssh -A -o StrictHostKeyChecking=no -J deploy@$VPS_HOST $PI_USER@$PI_HOST "echo Connected to Pi"
-      
-          echo "Copying docker-compose.yml to Pi..."
-          scp -o StrictHostKeyChecking=no -J deploy@$VPS_HOST ./infra/pi/docker-compose.yml $PI_USER@$PI_HOST:~/deploy/docker-compose.yml
-      
-          echo "Deploying Docker image on Pi..."
-          ssh -A -o StrictHostKeyChecking=no -J deploy@$VPS_HOST $PI_USER@$PI_HOST "
-            set -e
-            cd ~/deploy || mkdir -p ~/deploy && cd ~/deploy
-            docker pull eliasbe123/elias-portfolio:latest
-            docker compose down || true
-            docker compose up -d --build
-          "
+          echo "${{ secrets.VPS_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+          echo "${{ secrets.PI_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
 
+      # 6️⃣ Deploy Docker image on Pi via VPS
+      - name: Deploy on Pi via VPS
+        run: |
+          # Start SSH agent
+          eval "$(ssh-agent -s)"
+          echo "${{ secrets.PI_SSH_KEY }}" | tr -d '\r' | ssh-add -
+
+          # Test VPS connection
+          ssh -A -o StrictHostKeyChecking=no root@${{ secrets.VPS_HOST }} 'echo Connected to VPS'
+
+          # Test Pi connection via VPS
+          ssh -A -o StrictHostKeyChecking=no -J root@${{ secrets.VPS_HOST }} ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} 'echo Connected to Pi'
+
+          # Copy docker-compose.yml to Pi
+          scp -o StrictHostKeyChecking=no -o ProxyJump=root@${{ secrets.VPS_HOST }} ./infra/pi/docker-compose.yml \
+            ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }}:~/deploy/docker-compose.yml
+
+          # Deploy on Pi
+          ssh -A -o StrictHostKeyChecking=no -J root@${{ secrets.VPS_HOST }} ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "
+            cd ~/deploy &&
+            docker pull eliasbe123/elias-portfolio:latest &&
+            docker compose down &&
+            docker compose up -d
+          "
