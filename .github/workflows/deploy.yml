@@ -10,49 +10,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout repo
+      # 1️⃣ Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node.js
-      - name: Setup Node.js
+      # 2️⃣ Set up Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # 3️⃣ Install dependencies
-      - name: Install dependencies
-        working-directory: apps/web
-        run: npm install --legacy-peer-deps
-
-      # 4️⃣ Build app
-      - name: Build app
-        working-directory: apps/web
-        run: npm run build
-
-      # 5️⃣ Archive build
-      - name: Archive build
-        working-directory: apps/web
-        run: tar -czf build.tar.gz dist/
-
-      # 6️⃣ Copy build to Pi via VPS jump host
-      - name: Copy build to Pi
+      # 3️⃣ Build Docker image
+      - name: Build Docker image
         run: |
-          scp -o "ProxyJump root@${{ secrets.VPS_HOST }}" \
-              apps/web/build.tar.gz \
-              ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }}:~/deploy/
+          docker build -t your-dockerhub-username/elias-portfolio:latest apps/web
 
-      # 7️⃣ SSH into Pi, clean old build, and deploy
+      # 4️⃣ Log in to Docker Hub
+      - name: Docker Hub login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 5️⃣ Push Docker image to Docker Hub
+      - name: Push Docker image
+        run: |
+          docker push your-dockerhub-username/elias-portfolio:latest
+
+      # 6️⃣ Add VPS and Pi host keys to known_hosts
+      - name: Add SSH known hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VPS_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+          echo "${{ secrets.PI_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+
+      # 7️⃣ Deploy Docker image on Pi via VPS
       - name: Deploy on Pi
-        run: |
-          ssh -o "ProxyJump root@${{ secrets.VPS_HOST }}" \
-              ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "
-              mkdir -p ~/deploy &&
-              rm -rf ~/deploy/dist &&
-              cd ~/deploy &&
-              tar -xzf build.tar.gz &&
-              docker compose down &&
-              docker compose up -d --build
-          "
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.PI_SSH_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh -i ~/.ssh/id_rsa \
+              -o ProxyJump=root@${{ secrets.VPS_HOST }} \
+              ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "
+                docker pull your-dockerhub-username/elias-portfolio:latest &&
+                docker compose down &&
+                docker compose up -d --build
+          "
