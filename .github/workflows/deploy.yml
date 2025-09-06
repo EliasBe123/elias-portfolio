@@ -43,6 +43,12 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
           echo "${{ secrets.PI_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+      - name: Debug SSH connection
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "${{ secrets.PI_SSH_KEY }}" | tr -d '\r' | ssh-add -
+          ssh-add -l
+          ssh -v -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -J root@VPS_HOST PI_USER@PI_HOST "echo connected"
 
       # 7️⃣ Deploy Docker image on Pi via VPS
       - name: Deploy Docker on Pi via VPS
