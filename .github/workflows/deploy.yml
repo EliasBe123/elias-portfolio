@@ -1,41 +1,52 @@
-name: Deploy to Pi via VPS
+name: CI/CD Pipeline (Web App)
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main   # deploy on pushes to main branch
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      # 1️⃣ Checkout the repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node
+      # 2️⃣ Set up Node
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
+      # 3️⃣ Install dependencies inside apps/web
       - name: Install dependencies
+        working-directory: apps/web
         run: npm install --legacy-peer-deps
 
+      # 4️⃣ Build the app inside apps/web
       - name: Build app
+        working-directory: apps/web
         run: npm run build
 
+      # 5️⃣ Archive the build
       - name: Archive build
+        working-directory: apps/web
         run: tar -czf build.tar.gz dist/
 
+      # 6️⃣ Copy build to VPS
       - name: Copy build to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: root
           key: ${{ secrets.VPS_SSH_KEY }}
-          source: build.tar.gz
+          source: apps/web/build.tar.gz
           target: ~/deploy/
 
-      - name: SSH into VPS and deploy to Pi
+      # 7️⃣ SSH into VPS and deploy to Pi
+      - name: Deploy on Pi via VPS
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -45,4 +56,3 @@ jobs:
             ssh -o StrictHostKeyChecking=no ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "mkdir -p ~/deploy && rm -rf ~/deploy/dist"
             scp -o StrictHostKeyChecking=no ~/deploy/build.tar.gz ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }}:~/deploy/
             ssh -o StrictHostKeyChecking=no ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "cd ~/deploy && tar -xzf build.tar.gz && docker compose down && docker compose up -d --build"
-
