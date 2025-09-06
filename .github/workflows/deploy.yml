@@ -37,49 +37,37 @@ jobs:
         run: |
           docker push eliasbe123/elias-portfolio:latest
 
-      # 6️⃣ Add VPS and Pi host keys to known_hosts
-      - name: Add SSH known hosts
+      # 6️⃣ Deploy to Pi via VPS
+      - name: Deploy on Pi via VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          PI_HOST: ${{ secrets.PI_HOST }}
+          PI_USER: ${{ secrets.PI_USER }}
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
-          echo "${{ secrets.PI_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
-      - name: Debug SSH connection
-        run: |
+          set -euo pipefail
+          echo "Starting SSH agent..."
           eval "$(ssh-agent -s)"
-          echo "${{ secrets.PI_SSH_KEY }}" | tr -d '\r' | ssh-add -
-          ssh-add -l
-          ssh -v -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -J root@${{ secrets.VPS_HOST }} ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "echo connected"
 
-      # 7️⃣ Deploy Docker image on Pi via VPS
-      - name: Deploy Docker on Pi via VPS
-        run: |
-          set -x
-      
-          # 1️⃣ Start SSH agent and add private key
-          eval "$(ssh-agent -s)"
-          echo "${{ secrets.PI_SSH_KEY }}" | tr -d '\r' | ssh-add -
-          eval "$(ssh-agent -s)"
+          # Add VPS key (non-root deploy user)
           echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '\r' | ssh-add -
+          # Add Pi key (will be forwarded to Pi via agent)
+          echo "${{ secrets.PI_SSH_KEY }}" | tr -d '\r' | ssh-add -
 
-          
-          # 2️⃣ Prepare SSH directory and known_hosts for VPS
+          # Ensure known_hosts exists
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
-      
-          # 3️⃣ Test VPS connectivity
+          touch ~/.ssh/known_hosts
+
           echo "Testing connection to VPS..."
-          ssh -A -o StrictHostKeyChecking=no root@${{ secrets.VPS_HOST }} "echo 'Connected to VPS'"
-      
-          # 4️⃣ Test Pi connectivity through ProxyJump
+          ssh -o StrictHostKeyChecking=no deploy@$VPS_HOST "echo Connected to VPS"
+
           echo "Testing connection to Pi via VPS..."
-          ssh -A -o StrictHostKeyChecking=no -J root@${{ secrets.VPS_HOST }} ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "echo 'Connected to Pi'"
-      
-          # 5️⃣ Deploy Docker image
+          ssh -A -o StrictHostKeyChecking=no -J deploy@$VPS_HOST $PI_USER@$PI_HOST "echo Connected to Pi"
+
           echo "Deploying Docker image on Pi..."
-          ssh -A -o StrictHostKeyChecking=no -J root@${{ secrets.VPS_HOST }} ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "
-            set -x
+          ssh -A -o StrictHostKeyChecking=no -J deploy@$VPS_HOST $PI_USER@$PI_HOST "
+            set -e
             cd ~/deploy || mkdir -p ~/deploy && cd ~/deploy
             docker pull eliasbe123/elias-portfolio:latest
-            docker compose down
-            docker compose up -d
+            docker compose down || true
+            docker compose up -d --build
           "
