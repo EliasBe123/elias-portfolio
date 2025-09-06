@@ -20,8 +20,15 @@ jobs:
         with:
           node-version: 20
 
-      # 3️⃣ Build Docker image for Pi
-      - name: Build Docker image for Pi
+      # 3️⃣ Log in to Docker Hub
+      - name: Docker Hub login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      # 4️⃣ Build Docker image for Pi 5 and push
+      - name: Build Docker image for Pi 5
         run: |
           docker buildx create --use
           docker buildx build \
@@ -29,13 +36,6 @@ jobs:
             -t eliasbe123/elias-portfolio:latest \
             --push apps/web
 
-
-      # 4️⃣ Log in to Docker Hub
-      - name: Docker Hub login
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # 5️⃣ Push Docker image to Docker Hub
       - name: Push Docker image
