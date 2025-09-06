@@ -25,7 +25,7 @@ jobs:
         run: |
           docker buildx create --use
           docker buildx build \
-            --platform linux/arm/v7 \
+            --platform linux/arm64 \
             -t eliasbe123/elias-portfolio:latest \
             --push apps/web
 
