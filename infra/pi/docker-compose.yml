@@ -1,5 +1,10 @@
-version: "3.9"
-
 services:
   app:
-   
+    build:
+      context: ../../apps/web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+
