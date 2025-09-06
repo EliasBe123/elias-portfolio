@@ -20,10 +20,15 @@ jobs:
         with:
           node-version: 20
 
-      # 3️⃣ Build Docker image
-      - name: Build Docker image
+      # 3️⃣ Build Docker image for Pi
+      - name: Build Docker image for Pi
         run: |
-          docker build -t eliasbe123/elias-portfolio:latest apps/web
+          docker buildx create --use
+          docker buildx build \
+            --platform linux/arm/v7 \
+            -t eliasbe123/elias-portfolio:latest \
+            --push apps/web
+
 
       # 4️⃣ Log in to Docker Hub
       - name: Docker Hub login
