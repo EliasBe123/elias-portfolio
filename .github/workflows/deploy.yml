@@ -47,33 +47,25 @@ jobs:
       # 7️⃣ Deploy Docker image on Pi via VPS
       - name: Deploy on Pi via VPS
         run: |
-          # 1️⃣ Prepare SSH for GitHub Actions
+          # Enable debug to see errors
+          set -x
+      
+          # Prepare SSH key
           mkdir -p ~/.ssh
           printf "%s\n" "${{ secrets.PI_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
       
-          # 2️⃣ Add the Pi host to known_hosts (prevents host verification prompts)
+          # Add known hosts to avoid host verification prompts
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
           ssh-keyscan -H ${{ secrets.PI_HOST }} >> ~/.ssh/known_hosts
       
-          # 3️⃣ Optionally, add VPS host if using ProxyJump
-          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
-      
-          # 4️⃣ Copy the build from VPS to Pi
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-              -J root@${{ secrets.VPS_HOST }} \
-              ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "mkdir -p ~/deploy"
-      
-          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-              -o ProxyJump=root@${{ secrets.VPS_HOST }} \
-              ~/deploy/build.tar.gz ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }}:~/deploy/
-      
-          # 5️⃣ Extract and run Docker on the Pi
+          # Pull and deploy the Docker image on the Pi via VPS
           ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
               -J root@${{ secrets.VPS_HOST }} \
               ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "
-              cd ~/deploy &&
-              tar -xzf build.tar.gz &&
-              docker compose down &&
-              docker compose up -d --build
+              cd ~/deploy || mkdir -p ~/deploy && cd ~/deploy
+              docker pull eliasbe123/elias-portfolio:latest
+              docker compose down
+              docker compose up -d
           "
 
