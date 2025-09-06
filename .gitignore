@@ -1,0 +1,2 @@
+infra/pi/.env.example
+apps/api/.env.example
