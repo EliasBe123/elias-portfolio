@@ -1,10 +1,8 @@
 services:
   app:
-    build:
-      context: ../../apps/web
-      dockerfile: Dockerfile
+    image: ghcr.io/EliasBe123/elias-portfolio:latest
     ports:
       - "3000:3000"
-    environment:
-      NODE_ENV: production
+
+
 
