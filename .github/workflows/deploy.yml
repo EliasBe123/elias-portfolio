@@ -3,34 +3,34 @@ name: CI/CD Pipeline (Web App)
 on:
   push:
     branches:
-      - main   # deploy on pushes to main branch
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repo
+      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Set up Node
-      - name: Set up Node.js
+      # 2️⃣ Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # 3️⃣ Install dependencies inside apps/web
+      # 3️⃣ Install dependencies
       - name: Install dependencies
         working-directory: apps/web
         run: npm install --legacy-peer-deps
 
-      # 4️⃣ Build the app inside apps/web
+      # 4️⃣ Build app
       - name: Build app
         working-directory: apps/web
         run: npm run build
 
-      # 5️⃣ Archive the build
+      # 5️⃣ Archive build
       - name: Archive build
         working-directory: apps/web
         run: tar -czf build.tar.gz dist/
@@ -53,6 +53,17 @@ jobs:
           username: root
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            ssh -i ~/.ssh/ci_deploy_pi -o StrictHostKeyChecking=no ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "mkdir -p ~/deploy && rm -rf ~/deploy/dist"
+            # Ensure deploy folder exists on VPS
+            mkdir -p ~/deploy
+
+            # Copy tarball from VPS to Pi
+            ssh -i ~/.ssh/ci_deploy_pi -o StrictHostKeyChecking=no ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "mkdir -p ~/deploy"
             scp -i ~/.ssh/ci_deploy_pi -o StrictHostKeyChecking=no ~/deploy/build.tar.gz ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }}:~/deploy/
-            ssh -i ~/.ssh/ci_deploy_pi -o StrictHostKeyChecking=no ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "cd ~/deploy && tar -xzf build.tar.gz && docker compose down && docker compose up -d --build"
+
+            # Extract and run Docker on Pi
+            ssh -i ~/.ssh/ci_deploy_pi -o StrictHostKeyChecking=no ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "
+              cd ~/deploy &&
+              tar -xzf build.tar.gz &&
+              docker compose down &&
+              docker compose up -d --build
+            "
