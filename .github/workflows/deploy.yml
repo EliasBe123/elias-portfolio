@@ -50,7 +50,7 @@ jobs:
           set -x
       
           mkdir -p ~/.ssh
-          printf "%s\n" "${{ secrets.PI_SSH_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.PI_SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
       
           # Only scan VPS, skip Pi
