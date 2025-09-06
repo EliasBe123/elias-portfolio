@@ -23,7 +23,7 @@ jobs:
       # 3️⃣ Build Docker image
       - name: Build Docker image
         run: |
-          docker build -t your-dockerhub-username/elias-portfolio:latest apps/web
+          docker build -t eliasbe123/elias-portfolio:latest apps/web
 
       # 4️⃣ Log in to Docker Hub
       - name: Docker Hub login
@@ -35,7 +35,7 @@ jobs:
       # 5️⃣ Push Docker image to Docker Hub
       - name: Push Docker image
         run: |
-          docker push your-dockerhub-username/elias-portfolio:latest
+          docker push eliasbe123/elias-portfolio:latest
 
       # 6️⃣ Add VPS and Pi host keys to known_hosts
       - name: Add SSH known hosts
@@ -54,7 +54,7 @@ jobs:
           ssh -i ~/.ssh/id_rsa \
               -o ProxyJump=root@${{ secrets.VPS_HOST }} \
               ${{ secrets.PI_USER }}@${{ secrets.PI_HOST }} "
-                docker pull your-dockerhub-username/elias-portfolio:latest &&
+                docker pull eliasbe123/elias-portfolio:latest &&
                 docker compose down &&
                 docker compose up -d --build
           "
