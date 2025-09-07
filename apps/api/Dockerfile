@@ -1,35 +1,11 @@
-# apps/api/Dockerfile
-
-# --- Build frontend first ---
-FROM node:20-alpine AS frontend-build
-WORKDIR /app
-COPY apps/web/package*.json ./
-RUN npm install
-COPY apps/web .
-RUN npm run build
-
-# --- Build backend ---
-FROM node:20-alpine AS api-build
-WORKDIR /app
-COPY apps/api/package*.json ./
-RUN npm install
-COPY apps/api .
-COPY --from=frontend-build /app/dist /app/web/dist
-
-# --- Final stage ---
 FROM node:20-alpine
-ENV NODE_ENV=production PORT=3000 HOST=0.0.0.0
 WORKDIR /app
+ENV NODE_ENV=production PORT=3000 HOST=0.0.0.0
 
-# Copy backend build
+# Copy backend build (including frontend inside /web/dist)
 COPY --from=api-build /app/dist ./dist
 COPY --from=api-build /app/node_modules ./node_modules
 COPY --from=api-build /app/package*.json ./
 
-# Copy frontend build
-COPY --from=frontend-build /app/dist ./web/dist
-
 EXPOSE 3000
 CMD ["node", "dist/server.js"]
-
-
