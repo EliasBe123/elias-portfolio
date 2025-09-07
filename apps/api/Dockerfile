@@ -1,20 +1,20 @@
-# apps/api/Dockerfile
-
-# --- Build frontend first ---
+# Build frontend
 FROM node:20-alpine AS frontend-build
 WORKDIR /app
 COPY apps/web/package*.json ./
 RUN npm install
 COPY apps/web .
-RUN npm run build
+RUN npm run build   # Output: /app/dist
 
-# --- Build backend ---
+# Build backend
 FROM node:20-alpine AS api-build
 WORKDIR /app
 COPY apps/api/package*.json ./
 RUN npm install
 COPY apps/api .
-COPY --from=frontend-build /app/dist /app/web/dist
+COPY --from=frontend-build /app/dist /app/web/dist  # embed frontend into backend
+RUN npm run build  # if your backend compiles TS, outputs /app/dist
+
 
 FROM node:20-alpine
 WORKDIR /app
