@@ -1,9 +1,11 @@
+version: "3.9"
+
 services:
   app:
     image: eliasbe123/elias-portfolio:latest
+    container_name: portfolio_app
+    restart: always
     ports:
-      - "3000:3000"
-    restart: unless-stopped
-
-
-
+      - "80:3000"         # Map host port 80 to container 3000
+    environment:
+      NODE_ENV: production
