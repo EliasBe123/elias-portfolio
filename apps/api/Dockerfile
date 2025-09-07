@@ -5,6 +5,7 @@ COPY apps/web/package*.json ./
 RUN npm install
 COPY apps/web .
 RUN npm run build   # Output: /app/dist
+COPY --from=frontend-build /app/dist /app/web/dist
 
 # Build backend
 FROM node:20-alpine AS backend-build
