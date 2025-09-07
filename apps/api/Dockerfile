@@ -9,7 +9,7 @@ COPY apps/web .
 RUN npm run build
 
 # --- Build backend ---
-FROM node:20-alpine
+FROM node:20-alpine as api-build
 WORKDIR /app
 COPY apps/api/package*.json ./
 RUN npm install
