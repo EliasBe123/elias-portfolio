@@ -17,6 +17,9 @@ RUN npm install
 # Copy backend source
 COPY apps/api ./
 
+RUN npm run build  # outputs /app/dist
+
+
 # Ensure the frontend folder exists
 RUN mkdir -p /app/web
 
