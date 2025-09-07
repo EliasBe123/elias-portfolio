@@ -1,9 +1,9 @@
 # Stage 1: Build frontend
 FROM node:20-alpine AS frontend-build
 WORKDIR /app
-COPY ../../web/package*.json ./
+COPY ../web/package*.json ./
 RUN npm install
-COPY ../../web .
+COPY ../web .
 RUN npm run build
 
 # Stage 2: Build backend + include frontend
