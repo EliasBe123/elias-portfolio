@@ -12,7 +12,7 @@ WORKDIR /app
 COPY apps/api/package*.json ./
 RUN npm install
 COPY apps/api .
-COPY --from=frontend-build /app/dist /app/web/dist  # embed frontend into backend
+COPY --from=frontend-build /app/dist /app/web/dist  #embed frontend into backend
 RUN npm run build  # if your backend compiles TS, outputs /app/dist
 
 

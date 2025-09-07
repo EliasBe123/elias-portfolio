@@ -34,7 +34,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker buildx create --use
-          docker build \
+          docker buildx build \
             -t eliasbe123/elias-portfolio:latest \
             -f apps/api/Dockerfile \
             --push .
