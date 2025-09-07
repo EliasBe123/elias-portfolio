@@ -27,7 +27,7 @@ RUN mkdir -p /app/web
 COPY --from=frontend-build /app/dist /app/web/dist
 
 # Optional: if backend uses TypeScript
-# RUN npm run build
+RUN npm run build
 
 
 FROM node:20-alpine
