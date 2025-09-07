@@ -1,17 +1,19 @@
-# Stage 1: Build frontend
+# apps/api/Dockerfile
+
+# --- Build frontend first ---
 FROM node:20-alpine AS frontend-build
 WORKDIR /app
-COPY ../web/package*.json ./
+COPY apps/web/package*.json ./
 RUN npm install
-COPY ../web .
+COPY apps/web .
 RUN npm run build
 
-# Stage 2: Build backend + include frontend
+# --- Build backend ---
 FROM node:20-alpine
 WORKDIR /app
-COPY package*.json ./
+COPY apps/api/package*.json ./
 RUN npm install
-COPY . .
+COPY apps/api .
 COPY --from=frontend-build /app/dist /app/web/dist
 EXPOSE 3000
 CMD ["node", "dist/server.js"]

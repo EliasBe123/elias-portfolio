@@ -33,10 +33,11 @@ jobs:
       # 4️⃣ Build backend image (multi-stage includes frontend)
       - name: Build Docker image
         run: |
+          docker buildx create --use
           docker build \
             -t eliasbe123/elias-portfolio:latest \
             -f apps/api/Dockerfile \
-            .
+            --push .
 
       # 5️⃣ Deploy to Pi via VPS
       - name: Deploy on Pi via VPS
