@@ -18,12 +18,12 @@ app.get("/api/health", (_req, res) => {
 // --- Frontend handling ---
 if (isProd) {
   // Serve built frontend
-  const staticDir = path.resolve(__dirname, "../web/dist");
+  const staticDir = path.resolve(__dirname, "web/dist");
   app.use(express.static(staticDir, { maxAge: "30d", index: false }));
 
   // SPA fallback
   app.get("*", (_req, res) => {
-    res.sendFile(path.join(staticDir, "index.html"));
+    res.sendFile(path.join(staticDir, "web/distindex.html"));
   });
 } else {
   // Dev mode: proxy everything except /api to Vite
