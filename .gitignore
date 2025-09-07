@@ -1,6 +1,5 @@
 infra/pi/.env.example
 infra/pi/.env
-
 apps/api/.env.example
 apps/api/.env
 
