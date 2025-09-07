@@ -3,5 +3,5 @@ infra/pi/.env
 apps/api/.env.example
 apps/api/.env
 
-apps/web/package*.json
-apps/api/package*.json
+apps/web/node_modules
+apps/api/node_modules
