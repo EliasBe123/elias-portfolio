@@ -1,11 +1,14 @@
 version: "3.9"
 
 services:
-  app:
+  portfolio:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
     image: eliasbe123/elias-portfolio:latest
-    container_name: portfolio_app
-    restart: always
+    container_name: portfolio
     ports:
-      - "80:3000"         # Map host port 80 to container 3000
+      - "80:3000"       # Expose port 80 on host, mapped to backend port 3000
+    restart: unless-stopped
     environment:
       NODE_ENV: production
