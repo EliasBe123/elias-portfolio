@@ -1,19 +1,18 @@
-# apps/api/Dockerfile
-
-# --- Build frontend first ---
-FROM node:20-alpine AS frontend-build
-WORKDIR /app
-COPY apps/web/package*.json ./
-RUN npm install
-COPY apps/web .
-RUN npm run build
-
-# --- Build backend ---
 FROM node:20-alpine
+
 WORKDIR /app
-COPY apps/api/package*.json ./
+
+# Copy backend package files
+COPY package*.json ./
 RUN npm install
-COPY apps/api .
-COPY --from=frontend-build /app/dist /app/web/dist
+
+# Copy backend source code
+COPY . .
+
+# Copy frontend dist folder (built locally or via frontend Docker stage)
+COPY ../../web/dist ./web/dist
+
 EXPOSE 3000
+
+# Run your Express server
 CMD ["node", "dist/server.js"]
