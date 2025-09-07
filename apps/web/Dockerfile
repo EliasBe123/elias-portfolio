@@ -1,22 +1,33 @@
-# Use official Node.js image
-FROM node:20-alpine
-
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
+# Stage 1: Build frontend
+FROM node:20-alpine AS frontend-build
+WORKDIR /app/web
+COPY apps/web/package*.json ./
 RUN npm install
-
-# Copy rest of the app
-COPY . .
-
-# Build app
+COPY apps/web .
 RUN npm run build
 
-# Install a simple server to serve the build
-RUN npm install -g serve
+# Stage 2: Build backend
+FROM node:20-alpine AS backend-build
+WORKDIR /app/api
+COPY apps/api/package*.json ./
+RUN npm install
+COPY apps/api .
+RUN npm run build
 
-# Start server
-CMD ["serve", "-s", "dist", "-l", "3000"]
+# Stage 3: Production image
+FROM node:20-alpine
+WORKDIR /app
+
+# Copy backend
+COPY --from=backend-build /app/api/dist ./api/dist
+COPY --from=backend-build /app/api/package*.json ./api/
+RUN npm install --production --prefix ./api
+
+# Copy frontend build
+COPY --from=frontend-build /app/web/dist ./web/dist
+
+# Expose port
+EXPOSE 3000
+
+# Start Express server
+CMD ["node", "api/dist/server.js"]
