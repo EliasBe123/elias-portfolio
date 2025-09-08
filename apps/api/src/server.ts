@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'node:path';
 import compression from 'compression';
 import { fileURLToPath } from "url";
-import healthRouter from "./routes/health";
+import healthRouter from "./routes/health.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
