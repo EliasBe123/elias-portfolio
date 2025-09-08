@@ -37,7 +37,7 @@ jobs:
           docker buildx build \
             --platform linux/arm64 \
             -t eliasbe123/elias-portfolio:latest \
-            --push apps/web
+            --push .
 
       # 5️⃣ Deploy to Pi via VPS
       - name: Deploy on Pi via VPS
