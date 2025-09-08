@@ -36,9 +36,9 @@ export default function Timeline() {
   const timelineRef = useRef<HTMLDivElement | null>(null);
 
   return (
-    <div>
+    <div className='min-h-screen bg-animated'>
       <Navbar />
-      <div className="relative max-w-3xl mx-auto p-6 pt-20">
+      <div className="relative max-w-3xl mx-auto p-6 pt-24">
         <h1 className="text-3xl font-bold mb-12 text-center">My Career Timeline</h1>
 
         <div className="relative pb-64 lg:pb-96 pt-32" ref={timelineRef}>
@@ -76,13 +76,15 @@ export default function Timeline() {
                   key={index}
                   ref={(el) => (itemRefs.current[index] = el)}
                   data-index={index}
-                  className={`relative w-full flex justify-${isLeft ? 'start' : 'end'}`}
+                  className={`relative w-full flex ${
+                        isLeft ? 'md:justify-start justify-center' : 'md:justify-end justify-center'
+                    }`}
                 >
                   {/* Card */}
                   <div
                     style={{ transitionDelay: `${index * 200}ms` }} // stagger animation
                     className={`
-                      bg-white p-6 rounded-lg shadow-md sm:w-80
+                      bg-white p-6 rounded-lg shadow-md w-72 sm:w-80
                       transform transition-all duration-700 ease-out
                       ${isVisible 
                         ? (isLeft ? 'translate-x-0 opacity-100' : 'ml-auto opacity-100') 

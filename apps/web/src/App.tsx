@@ -6,9 +6,9 @@ export default function App() {
   ];
 
   return (
-    <div>
+    <div className='min-h-screen bg-animated flex items-center justify-center'>
       <Navbar />
-        <main className="max-w-3xl mx-auto p-6 pt-20">
+        <main className="max-w-3xl mx-auto p-6 pt-24">
           <header className="mb-8">
             <h1 className="text-3xl font-bold">Elias Benjaminsson</h1>
             <p className="text-slate-600">Software Developer</p>

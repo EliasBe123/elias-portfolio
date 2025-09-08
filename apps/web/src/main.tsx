@@ -5,6 +5,7 @@ import './index.css';
 import App from './App';
 import Dashboard from './Dashboard';
 import Timeline from './Timeline';
+document.documentElement.classList.add('dark');
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
