@@ -31,7 +31,7 @@ COPY apps/api ./
 
 # Copy built frontend into backend folder
 RUN mkdir -p /app/apps/api/web
-COPY --from=frontend-build /app/dist /app/dist/public
+COPY --from=frontend-build /app/apps/web/dist /app/apps/api/web/dist
 
 # Build backend (outputs to /app/apps/api/dist, assuming TS build)
 RUN npm run build
