@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Navbar from './Navbar';
 
 type HealthStatus = {
   status: string;
@@ -29,25 +30,28 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <main className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-4">Server Dashboard</h1>
+    <div>
+        <Navbar />
+            <main className="max-w-3xl mx-auto p-6 pt-20">
+            <h1 className="text-3xl font-bold mb-4">Server Dashboard</h1>
 
-      {loading && <p>Loading server status...</p>}
-      {error && <p className="text-red-600">Error: {error}</p>}
+            {loading && <p>Loading server status...</p>}
+            {error && <p className="text-red-600">Error: {error}</p>}
 
-      {health && (
-        <div className="space-y-2">
-          <p>
-            <strong>Status:</strong> {health.status}
-          </p>
-          {health.uptime !== undefined && (
-            <p>
-              <strong>Uptime:</strong> {Math.floor(health.uptime / 1000)}s
-            </p>
-          )}
-          {/* Add more fields from your health API if needed */}
-        </div>
-      )}
-    </main>
+            {health && (
+                <div className="space-y-2">
+                <p>
+                    <strong>Status:</strong> {health.status}
+                </p>
+                {health.uptime !== undefined && (
+                    <p>
+                    <strong>Uptime:</strong> {health.uptime}s
+                    </p>
+                )}
+                {/* Add more fields from your health API if needed */}
+                </div>
+            )}
+            </main>
+    </div>
   );
 }

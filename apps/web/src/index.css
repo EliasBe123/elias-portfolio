@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* your custom CSS here */
 :root {
   color-scheme: light dark;
 }
