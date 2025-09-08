@@ -2,6 +2,8 @@ import express from 'express';
 import path from 'node:path';
 import compression from 'compression';
 import { fileURLToPath } from "url";
+import healthRouter from "./routes/health";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,9 +19,12 @@ app.use(compression());
 const staticDir = path.resolve(__dirname, 'public');
 app.use(express.static(staticDir, { maxAge: '30d', index: false }));
 
-// --- Basic API ---
-app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, ts: new Date().toISOString() });
+// --- Health check endpoint ---
+app.use("/api", healthRouter);
+
+// --- Dashboard ---
+app.get("/dashboard", (_, res) => {
+  res.sendFile(path.join(__dirname, "../web/dashboard.html"));
 });
 
 // --- SPA fallback ---
