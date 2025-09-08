@@ -8,7 +8,8 @@
     "strict": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true
+    "outDir": "dist",
+    "rootDir": "src",
   },
   "include": ["src", "vite.config.ts", "src/**/*.ts"]
 
