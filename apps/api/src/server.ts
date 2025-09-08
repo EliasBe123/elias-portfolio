@@ -16,7 +16,7 @@ app.set('trust proxy', true);
 app.use(compression());
 
 // --- Static site (built by Vite) ---
-const staticDir = path.resolve(__dirname, 'public');
+const staticDir = path.resolve(__dirname, '../web/dist');
 app.use(express.static(staticDir, { maxAge: '30d', index: false }));
 
 // --- Health check endpoint ---
