@@ -82,10 +82,14 @@ export default function Timeline() {
                   <div
                     style={{ transitionDelay: `${index * 200}ms` }} // stagger animation
                     className={`
-                      bg-white p-6 rounded-lg shadow-md w-80
+                      bg-white p-6 rounded-lg shadow-md sm:w-80
                       transform transition-all duration-700 ease-out
-                      ${isVisible ? 'translate-x-0 opacity-100' : isLeft ? '-translate-x-40 opacity-0' : 'translate-x-40 opacity-0'}
-                      
+                      ${isVisible 
+                        ? (isLeft ? 'translate-x-0 opacity-100' : 'ml-auto opacity-100') 
+                        : isLeft 
+                            ? 'md:-translate-x-40 opacity-0' 
+                            : 'md:translate-x-40 opacity-0'
+                        }
                     `}
                   >
                     <p className="text-sm text-gray-400">{item.year}</p>
@@ -98,7 +102,8 @@ export default function Timeline() {
                   <div
                     className={`absolute left-1/2 -translate-x-1/2 top-8 w-4 h-4 rounded-full
                       ${isVisible ? 'bg-blue-500 scale-100' : 'bg-gray-300 scale-0'}
-                      transition-all duration-500`}
+                      transition-all duration-500 hidden md:block
+                      `}
                   />
                 </div>
               );
