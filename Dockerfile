@@ -4,8 +4,8 @@ FROM node:20-alpine AS frontend-build
 WORKDIR /app
 
 # Install frontend dependencies
-COPY apps/web/package*.json ./apps/web/
-WORKDIR /app/apps/web
+COPY apps/web/package*.json ./
+WORKDIR /app/web .
 RUN npm install
 
 # Copy frontend source
@@ -31,7 +31,7 @@ COPY apps/api ./
 
 # Copy built frontend into backend folder
 RUN mkdir -p /app/apps/api/web
-COPY --from=frontend-build /app/apps/web/dist /app/apps/api/web/dist
+COPY --from=frontend-build /app/dist /app/dist/public
 
 # Build backend (outputs to /app/apps/api/dist, assuming TS build)
 RUN npm run build
