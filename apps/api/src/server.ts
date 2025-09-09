@@ -18,9 +18,7 @@ app.set('trust proxy', true);
 app.use(compression());
 
 app.use((req, res, next) => {
-  if (!req.path.startsWith("/api")) { 
-    console.log(`${req.ip} - ${req.method} ${req.path}`);
-    // Don't log API calls, only frontend page visits
+  if (!req.path.startsWith("/api") && req.headers.accept?.includes("text/html")) {
     const stmt = db.prepare("INSERT INTO visits (path, ip) VALUES (?, ?)");
     stmt.run(req.path, req.ip);
   }

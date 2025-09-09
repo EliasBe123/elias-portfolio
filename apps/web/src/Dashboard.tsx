@@ -11,38 +11,39 @@ import {
 } from 'recharts';
 
 type HealthStatus = {
-  status: string;
   uptime: number;
-  memory?: number;
-  cpuLoad?: number;
+  memory: number;
+  cpuLoad: number;
   timestamp: number;
 };
-
-
 
 export default function Dashboard() {
   const [healthHistory, setHealthHistory] = useState<HealthStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-    function formatUptime(seconds: number) {
+
+  function formatUptime(seconds: number) {
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
     return `${hrs}h ${mins}m`;
-    }
+  }
+
+  // Fetch visit stats
   useEffect(() => {
-  fetch("/api/stats/visits")
-    .then(res => res.json())
-    .then(data => console.log("Visit stats:", data));
+    fetch("/api/stats/visits")
+      .then(res => res.json())
+      .then(data => console.log("Visit stats:", data))
+      .catch(err => console.error("Visits fetch error:", err));
   }, []);
 
+  // Fetch health history
   useEffect(() => {
-    const fetchHealth = async () => {
+    const fetchHistory = async () => {
       try {
-        const res = await fetch('/api/health');
+        const res = await fetch('/api/stats/health-history');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data: HealthStatus = await res.json();
-
-        setHealthHistory((prev) => [...prev.slice(-19), data]); // Keep last 20 points
+        const data: HealthStatus[] = await res.json();
+        setHealthHistory(data);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -50,10 +51,12 @@ export default function Dashboard() {
       }
     };
 
-    fetchHealth(); // initial fetch
-    const interval = setInterval(fetchHealth, 3000); // fetch every 3 seconds
+    fetchHistory();
+    const interval = setInterval(fetchHistory, 5000); // refresh every 5s
     return () => clearInterval(interval);
   }, []);
+
+  const latest = healthHistory[healthHistory.length - 1];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
@@ -64,22 +67,22 @@ export default function Dashboard() {
         {loading && <p>Loading server status...</p>}
         {error && <p className="text-red-600">Error: {error}</p>}
 
-        {healthHistory.length > 0 && (
+        {latest && (
           <div className="space-y-6">
             {/* Latest status */}
             <div className="flex justify-around p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
               <p>
-                <strong>Status:</strong> {healthHistory[healthHistory.length - 1].status}
+                <strong>Uptime:</strong> {formatUptime(latest.uptime)}
               </p>
               <p>
-                <strong>Uptime:</strong>{' '}
-                {healthHistory[healthHistory.length - 1].uptime !== undefined
-                    ? formatUptime(healthHistory[healthHistory.length - 1].uptime)
-                    : 'N/A'}
-                </p>
+                <strong>CPU Load:</strong> {latest.cpuLoad.toFixed(2)}
+              </p>
+              <p>
+                <strong>Memory:</strong> {latest.memory.toFixed(1)} MB
+              </p>
             </div>
 
-            {/* Mini line chart */}
+            {/* History chart */}
             <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold mb-2">CPU & Memory Usage</h2>
               <ResponsiveContainer width="100%" height={200}>
@@ -107,7 +110,6 @@ export default function Dashboard() {
                   />
                 </LineChart>
               </ResponsiveContainer>
-              
             </div>
           </div>
         )}
