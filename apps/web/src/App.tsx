@@ -11,7 +11,7 @@ export default function App() {
         <main className="max-w-3xl mx-auto p-6 pt-24">
           <header className="mb-8">
             <h1 className="text-3xl font-bold">Elias Benjaminsson</h1>
-            <p className="text-slate-600">Software Developer</p>
+            <p className="text-slate-600 typing inline-block">Software Developer studying Civil Engineering In informationTechnology</p>
             <nav className="mt-4 flex gap-4 text-blue-600">
               <a href="/resume.pdf" className="hover:underline">Resume</a>
               <a href="https://github.com/your-github" className="hover:underline">GitHub</a>

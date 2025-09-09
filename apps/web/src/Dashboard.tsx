@@ -30,6 +30,12 @@ export default function Dashboard() {
     return `${hrs}h ${mins}m`;
     }
   useEffect(() => {
+  fetch("/api/stats/visits")
+    .then(res => res.json())
+    .then(data => console.log("Visit stats:", data));
+  }, []);
+
+  useEffect(() => {
     const fetchHealth = async () => {
       try {
         const res = await fetch('/api/health');
@@ -101,6 +107,7 @@ export default function Dashboard() {
                   />
                 </LineChart>
               </ResponsiveContainer>
+              
             </div>
           </div>
         )}
