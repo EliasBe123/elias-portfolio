@@ -50,12 +50,12 @@ setInterval(() => {
     DELETE FROM health_history
     WHERE timestamp < ?
   `).run(Date.now() - 24 * 60 * 60 * 1000);
-}, 5000);
+}, 30000);
 
 // API endpoint: get latest history
 router.get("/health-history", (_req, res) => {
   const rows = db
-    .prepare("SELECT * FROM health_history ORDER BY timestamp DESC LIMIT 100")
+    .prepare("SELECT * FROM health_history ORDER BY timestamp DESC")
     .all();
   res.json(rows.reverse()); // chronological order
 });

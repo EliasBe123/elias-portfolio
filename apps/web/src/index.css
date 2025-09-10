@@ -52,3 +52,7 @@
   animation-fill-mode: forwards;
   animation-delay: 0.5s;
 }
+
+.clip-diagonal {
+  clip-path: polygon(0 0, 100% 10%, 100% 100%, 0% 90%);
+}
