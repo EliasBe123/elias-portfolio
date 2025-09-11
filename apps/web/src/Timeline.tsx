@@ -41,10 +41,12 @@ export default function Timeline() {
             className="absolute left-1/2 -translate-x-1/2 w-1 bg-gray-600 top-0 bottom-0"
             style={{
               height: `${
-                itemRefs.current[timelineData.length - 1]
-                  ? itemRefs.current[timelineData.length - 1]!.offsetTop +
-                    itemRefs.current[timelineData.length - 1]!.offsetHeight / 2
-                  : 0
+                itemRefs.current.length > 0
+                  ? itemRefs.current[timelineData.length - 1]
+                    ? itemRefs.current[timelineData.length - 1]!.offsetTop +
+                      itemRefs.current[timelineData.length - 1]!.offsetHeight / 2
+                    : 0
+                  : 1000
               }px`,
             }}
           >
