@@ -7,6 +7,10 @@
   color-scheme: light dark;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 /* Define the keyframes for the animated gradient */
 @keyframes gradient {
   0% { background-position: 0% 50%; }
@@ -55,4 +59,8 @@
 
 .clip-diagonal {
   clip-path: polygon(0 0, 100% 10%, 100% 100%, 0% 90%);
+}
+
+.links-hover\:underline:hover {
+  text-decoration: underline;
 }
