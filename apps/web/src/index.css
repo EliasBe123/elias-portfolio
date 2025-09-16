@@ -7,6 +7,10 @@
   color-scheme: light dark;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 /* Define the keyframes for the animated gradient */
 @keyframes gradient {
   0% { background-position: 0% 50%; }
@@ -40,4 +44,23 @@
     50% { border-color: transparent }
     100% { border-right: none; }
   }
+}
+
+@keyframes fadeInAnimation {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.text-fade-in {
+  opacity: 0;
+  animation: fadeInAnimation ease 2s;
+  animation-fill-mode: forwards;
+  animation-delay: 0.5s;
+}
+
+.clip-diagonal {
+  clip-path: polygon(0 0, 100% 10%, 100% 100%, 0% 90%);
+}
+
+.links-hover\:underline:hover {
+  text-decoration: underline;
 }
