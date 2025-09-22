@@ -27,22 +27,22 @@ export default function Contacts() {
   return (
     
     <section className="text-white py-16 min-h-screen">
-        <Navbar />
       <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
         {/* Intro paragraph */}
+        <h2 className="text-3xl font-bold mb-6">Get in Touch!</h2>
         <p className="mb-12 text-lg text-gray-300">
           I’m always open to new opportunities and collaborations. Feel free to reach out to me via GitHub, LinkedIn, or Email.
         </p>
 
         {/* Contacts in a column */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col items-center gap-6">
           {contacts.map((contact, index) => (
             <a
               key={index}
               href={contact.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 px-6 py-3 rounded-lg shadow-md bg-gray-800 hover:bg-gray-700 transition w-128 justify-center"
+              className="flex items-center gap-3 px-6 py-3 rounded-lg shadow-md bg-gray-800 hover:bg-gray-700 transition w-96 justify-center"
             >
               {contact.icon}
               <span className="text-lg">{contact.name}: {contact.username}</span>

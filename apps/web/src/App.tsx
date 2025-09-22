@@ -39,11 +39,31 @@ export default function App() {
             </header>
 
             <section className="mb-8">
-              <h2 className="text-xl font-semibold mb-3 text-gray-300">About</h2>
+              <h2 className="text-xl font-semibold mb-3 text-gray-300">About Me</h2>
               <p className="leading-relaxed text-gray-300">
-                I build pragmatic, performant applications. This site runs on a
-                Raspberry Pi 5 behind a VPS reverse proxy via WireGuard. Frontend:
-                React + Tailwind. Backend: Express.
+                Hi, I’m Elias, an Information Technology student at Uppsala University, 
+                currently pursuing a Master’s in Data Analysis. With the rise of LLMs, 
+                I’ve adopted a mindset that competition in software development is going to get tougher. 
+                While LLMs can’t replace developers yet, they do make work more efficient, 
+                meaning fewer developers are needed. 
+                That’s why I strive to challenge myself beyond my studies by working in software development 
+                alongside my academic work and tackling exciting personal projects, such as this website.
+              </p>
+              <p className="leading-relaxed text-gray-300 mt-4">
+                I have professional experience in IT consulting and currently contribute to 
+                software development in the aviation industry. During IT consulting, 
+                I worked on legacy systems over 20 years old, which was both a challenge and a 
+                lesson in managing technical debt and feature creep. Through my personal projects, 
+                as well as my work at Aviation iSolutions and Saab, I’ve gained extensive experience in 
+                full-stack development using modern frameworks like React, Node.js, Docker, and Vue. I’ve 
+                built CI/CD pipelines, configured reverse proxies, and optimized applications for 
+                performance and maintainability.
+              </p>
+              <p className="leading-relaxed text-gray-300 mt-4">
+                I enjoy solving complex problems, collaborating in cross-functional teams, 
+                and continuously learning new technologies. My goal is to contribute to 
+                innovative software projects that have real-world impact while continuously 
+                expanding my technical expertise and adapting to the evolving landscape of IT.
               </p>
             </section>
 

@@ -1,18 +1,53 @@
 import React, { useRef, useEffect, useState } from 'react';
 
 const timelineData = [
-  { year: '2025', company: 'Company A', role: 'Software Engineer', desc: 'Worked on backend APIs.' },
-  { year: '2023', company: 'Company B', role: 'Frontend Developer', desc: 'Built SPAs with React.' },
-  { year: '2021', company: 'Company C', role: 'Intern', desc: 'Learned full-stack development.' },
+  {
+    year: '2025',
+    period: 'Autumn',
+    company: 'Uppsala University',
+    role: 'Masters in Computer Science',
+    desc: 'Continuing my studies with a focus on data analysis, machine learning, and advanced algorithms.',
+    techStack: 'Statistics, Data Engineering, Natural Computing Methods For ML'
+  },
+  {
+    year: '2025',
+    period: 'Summer',
+    company: 'Saab',
+    role: 'Software Developer',
+    desc: 'Worked on a drone detection application through the use of sensor fusion, fusing image detection and sound localization.',
+    techStack: 'C, Python, YOLOv13, FPGA'
+  },
+  {
+    year: '2024–Now',
+    company: 'Aviation iSolutions',
+    role: 'Software Developer',
+    desc: 'Contributed to modern full-stack projects, including frontend and backend development.',
+    techStack: 'JavaScript, Vue, Go, Postgresql, Docker'
+  },
+  {
+    year: '2022-2025',
+    company: 'Uppsala University',
+    role: 'Bachelor of science',
+    desc: 'Started my studies in Civil Engineering In Information Technology.',
+    techStack: 'Java, C, Python, SQL, Linux'
+  },
+  {
+    year: '2021',
+    company: 'Sylog AB',
+    role: 'Trainee Consultant',
+    desc: 'Worked on a troubleshooting application for Scania trucks and buses using C/C++, improving maintenance efficiency. Optimized code to reduce application CPU usage by 14%.',
+    techStack: 'C, C++, Valgrind'
+  },
 ];
+
 
 export default function Timeline() {
   const [visibleItems, setVisibleItems] = useState<number[]>([]);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
+  const [expandedCards, setExpandedCards] = useState<number[]>([]);
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const timelineRef = useRef<HTMLDivElement | null>(null);
 
-  // Check localStorage on mount
   useEffect(() => {
     const hasVisited = localStorage.getItem("timelineVisited");
     if (hasVisited) {
@@ -21,7 +56,6 @@ export default function Timeline() {
     }
   }, []);
 
-  // Run observer only if animations are enabled
   useEffect(() => {
     if (!animationsEnabled) return;
 
@@ -43,26 +77,34 @@ export default function Timeline() {
     };
   }, [visibleItems, animationsEnabled]);
 
-  // After first full run → mark as visited
+  // Mark timeline as visited after animations complete
   useEffect(() => {
     if (animationsEnabled && visibleItems.length === timelineData.length) {
       localStorage.setItem("timelineVisited", "true");
     }
   }, [visibleItems, animationsEnabled]);
 
-  // Reset flag if leaving page while at the very top
+  // Reset animations if leaving page at top
   useEffect(() => {
     const handleBeforeUnload = () => {
       if (window.scrollY < 50) {
         localStorage.removeItem("timelineVisited");
       }
     };
-
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, []);
+
+  // Toggle expanded state for cards
+  const toggleCard = (index: number) => {
+    if (expandedCards.includes(index)) {
+      setExpandedCards(expandedCards.filter((i) => i !== index));
+    } else {
+      setExpandedCards([...expandedCards, index]);
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
@@ -120,6 +162,7 @@ export default function Timeline() {
                   className={`
                     bg-white text-black p-6 rounded-lg shadow-md w-72 sm:w-80
                     transform transition-all duration-700 ease-out z-10
+                    cursor-pointer
                     ${
                       isVisible
                         ? isLeft
@@ -130,11 +173,50 @@ export default function Timeline() {
                         : "md:translate-x-40 opacity-0"
                     }
                   `}
+                  onClick={() => toggleCard(index)}
                 >
                   <p className="text-sm text-gray-400">{item.year}</p>
+                  {item.period && <p className="text-xs text-gray-400">{item.period}</p>}
                   <h3 className="text-lg font-semibold">{item.role}</h3>
                   <p className="text-gray-600">{item.company}</p>
-                  <p className="mt-2 text-gray-500">{item.desc}</p>
+                  <p
+                    className={`mt-2 text-gray-500 transition-all duration-500 cursor-pointer ${
+                      expandedCards.includes(index) ? "max-h-96" : "max-h-24 overflow-hidden"
+                    }`}
+                    onClick={() => {
+                      if (item.desc.length > 70) toggleCard(index);
+                    }}
+                  >
+                    {expandedCards.includes(index)
+                      ? item.desc
+                      : item.desc.length > 70
+                        ? item.desc.slice(0, 70) + "..."
+                        : item.desc
+                    }
+                  </p>
+
+                  {item.desc.length > 70 && (
+                    <span
+                      className="text-purple-500 text-sm mt-1 block cursor-pointer"
+                      onClick={() => toggleCard(index)}
+                    >
+                      {expandedCards.includes(index) ? "Show less" : "Read more"}
+                    </span>
+                  )}
+                    {item.techStack && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {item.techStack.split(',').map((tech) => (
+                          <span
+                            key={tech.trim()}
+                            className="text-orange-600 border border-orange-400 rounded-full px-3 py-1 text-xs font-semibold"
+                          >
+                            {tech.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+
                 </div>
 
                 <div
