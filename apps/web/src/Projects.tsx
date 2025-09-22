@@ -3,21 +3,21 @@ import ProjectCard from "./Projectcard";
 const projects = [
   {
     title: "Portfolio Website",
-    image: "/images/portfolio.png",
+    image: "/public/portfolio_techstack.png",
     tech: ["React", "Tailwind", "TypeScript"],
     description: "A personal website showcasing my projects and skills.",
   },
   {
-    title: "E-Commerce App",
-    image: "/images/ecommerce.png",
-    tech: ["Next.js", "MongoDB", "Stripe"],
-    description: "A full-stack e-commerce platform with payment integration.",
+    title: "2048 Neural Network",
+    image: "/public/2048.png",
+    tech: ["Python", "TensorFlow"],
+    description: "A neural network implementation of the 2048 game using deep learning techniques.",
   },
   {
-    title: "Chat App",
-    image: "/images/chat.png",
-    tech: ["Node.js", "Socket.IO", "Express"],
-    description: "A real-time chat application with private rooms.",
+    title: "Pubcrawl Planner",
+    image: "/public/pubcrawl.png",
+    tech: ["C", "Traveling Salesman Problem", "Held-Karp Algorithm"],
+    description: "A pub crawl planning application to optimize routes.",
   },
 ];
 

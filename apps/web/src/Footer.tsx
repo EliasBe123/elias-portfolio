@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
-    <footer className="bg-gray-800 text-white py-6 mt-12 flex justify-center">
-        <div className="border-t-4 border-green-500 w-2/3 text-center">
+    <footer className="bg-gray-800 text-white flex justify-center">
+        <div className="border-t-4 py-6 border-green-500 w-3/5 text-center">
           <p>
             &copy; {new Date().getFullYear()} Designed & developed by Elias Benjaminsson under
             <a

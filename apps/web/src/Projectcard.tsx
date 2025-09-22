@@ -32,7 +32,7 @@ export default function ProjectCard({ project }: { project: Project }) {
             className="bg-white p-6 rounded-lg max-w-lg w-full"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-xl font-bold">{project.title}</h2>
+            <h2 className="text-xl font-bold text-slate-500">{project.title}</h2>
             <img src={project.image} alt={project.title} className="w-full h-64 object-cover rounded my-4" />
             <p className="text-gray-600">{project.description}</p>
             <button

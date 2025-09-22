@@ -7,9 +7,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-end items-center">
         <div className="space-x-6">
           <a href="/" className="hover:text-blue-600 border-r-2 pr-6">Home</a>
-          <a href="/dashboard" className="hover:text-blue-600 border-r-2 pr-6">Dashboard</a>
-          <a href="/timeline" className="hover:text-blue-600 border-r-2 pr-6">Timeline</a>
-          <a href="/contacts" className="hover:text-blue-600">Contacts</a>
+          <a href="/dashboard" className="hover:text-blue-600">Dashboard</a>
         </div>
       </div>
     </nav>
