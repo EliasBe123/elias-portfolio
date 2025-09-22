@@ -5,6 +5,7 @@ import './index.css';
 import App from './App';
 import Dashboard from './Dashboard';
 import Timeline from './Timeline';
+import Contacts from './Contacts';
 document.documentElement.classList.add('dark');
 
 createRoot(document.getElementById('root')!).render(

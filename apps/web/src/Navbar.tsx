@@ -9,7 +9,7 @@ export default function Navbar() {
           <a href="/" className="hover:text-blue-600 border-r-2 pr-6">Home</a>
           <a href="/dashboard" className="hover:text-blue-600 border-r-2 pr-6">Dashboard</a>
           <a href="/timeline" className="hover:text-blue-600 border-r-2 pr-6">Timeline</a>
-          <a href="/api/health" className="hover:text-blue-600">API Health</a>
+          <a href="/contacts" className="hover:text-blue-600">Contacts</a>
         </div>
       </div>
     </nav>
