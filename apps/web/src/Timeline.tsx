@@ -33,6 +33,7 @@ const timelineData = [
   },
   {
     year: '2021',
+    period: 'Autumn',
     company: 'Sylog AB',
     role: 'Trainee Consultant',
     desc: 'Worked on a troubleshooting application for Scania trucks and buses using C/C++, improving maintenance efficiency. Optimized code to reduce application CPU usage by 14%.',
@@ -68,7 +69,7 @@ export default function Timeline() {
           }
         });
       },
-      { root: null, rootMargin: "-50% 0px -50% 0px", threshold: 0 }
+      { root: null, rootMargin: "-40% 0px -50% 0px", threshold: 0 }
     );
 
     itemRefs.current.forEach((el) => el && observer.observe(el));
@@ -178,7 +179,14 @@ export default function Timeline() {
                   <p className="text-sm text-gray-400">{item.year}</p>
                   {item.period && <p className="text-xs text-gray-400">{item.period}</p>}
                   <h3 className="text-lg font-semibold">{item.role}</h3>
-                  <p className="text-gray-600">{item.company}</p>
+                  <p className="flex items-center text-gray-600 gap-2">
+                    <img 
+                      src={`/public/${item.company.replace(/\s+/g, '').toLowerCase()}.png`} 
+                      alt="Company icon" 
+                      className="w-4 h-4"
+                    />
+                    {item.company}
+                  </p>
                   <p
                     className={`mt-2 text-gray-500 transition-all duration-500 cursor-pointer ${
                       expandedCards.includes(index) ? "max-h-96" : "max-h-24 overflow-hidden"
