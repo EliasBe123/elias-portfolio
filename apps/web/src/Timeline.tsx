@@ -181,7 +181,7 @@ export default function Timeline() {
                   <h3 className="text-lg font-semibold">{item.role}</h3>
                   <p className="flex items-center text-gray-600 gap-2">
                     <img 
-                      src={`/public/${item.company.replace(/\s+/g, '').toLowerCase()}.png`} 
+                      src={`/${item.company.replace(/\s+/g, '').toLowerCase()}.png`} 
                       alt="Company icon" 
                       className="w-4 h-4"
                     />

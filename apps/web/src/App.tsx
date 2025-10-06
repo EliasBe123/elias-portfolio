@@ -6,10 +6,6 @@ import Contacts from "./Contacts";
 
 
 export default function App() {
-  const projects = [
-    { name: "Project A", link: "#", tech: ["TypeScript", "Node", "React"] },
-    { name: "Project B", link: "#", tech: ["Python", "FastAPI"] },
-  ];
 
   return (
     <div className="min-h-screen bg-animated flex flex-col">
