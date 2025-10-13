@@ -20,7 +20,7 @@ html {
 
 /* Custom class for the animated background */
 .bg-animated {
-  background: linear-gradient(-45deg, #6b21a8, #db2777, #32baba, #6366f1);
+  background: linear-gradient(-45deg, #2d1068, #7c1c4b, #164e63, #1e293b);  
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
 }
