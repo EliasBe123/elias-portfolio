@@ -6,12 +6,15 @@ const projects = [
     image: "/portfolio_techstack.png",
     tech: ["React", "Tailwind", "TypeScript"],
     description: "A personal website showcasing my projects and skills.",
+    githubUser: "EliasBe123",
+    githubRepo: "elias-portfolio",
   },
   {
     title: "2048 Neural Network",
     image: "/2048.png",
     tech: ["Python", "TensorFlow"],
     description: "A neural network implementation of the 2048 game using deep learning techniques.",
+ 
   },
   {
     title: "Pubcrawl Planner",
