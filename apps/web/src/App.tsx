@@ -1,11 +1,11 @@
 import Navbar from "./Navbar";
 import Timeline from "./Timeline";
 import Projects from "./Projects";
+import Footer from "./Footer";
+import Contacts from "./Contacts";
+
+
 export default function App() {
-  const projects = [
-    { name: "Project A", link: "#", tech: ["TypeScript", "Node", "React"] },
-    { name: "Project B", link: "#", tech: ["Python", "FastAPI"] },
-  ];
 
   return (
     <div className="min-h-screen bg-animated flex flex-col">
@@ -32,55 +32,39 @@ export default function App() {
                   <p className="text-gray-300 typing">Civil Engineering Student</p>
                 </div>
               </div>
-              <nav className="mt-4 flex gap-4 text-blue-600">
-                <a href="/resume.pdf" className="hover:underline">
-                  Resume
-                </a>
-                <a
-                  href="https://github.com/your-github"
-                  className="hover:underline"
-                >
-                  GitHub
-                </a>
-                <a href="mailto:you@example.com" className="hover:underline">
-                  Contact
-                </a>
-              </nav>
             </header>
 
             <section className="mb-8">
-              <h2 className="text-xl font-semibold mb-3 text-gray-300">About</h2>
+              <h2 className="text-xl font-semibold mb-3 text-gray-300">About Me</h2>
               <p className="leading-relaxed text-gray-300">
-                I build pragmatic, performant applications. This site runs on a
-                Raspberry Pi 5 behind a VPS reverse proxy via WireGuard. Frontend:
-                React + Tailwind. Backend: Express.
+                Hi, I’m Elias, an Information Technology student at Uppsala University, 
+                currently pursuing a Master’s in Data Analysis. With the rise of LLMs, 
+                I’ve adopted a mindset that competition in software development is going to get tougher. 
+                While LLMs can’t replace developers yet, they do make work more efficient, 
+                meaning fewer developers are needed. 
+                That’s why I strive to challenge myself beyond my studies by working in software development 
+                alongside my academic work and tackling exciting personal projects, such as this website.
+              </p>
+              <p className="leading-relaxed text-gray-300 mt-4">
+                I have professional experience in IT consulting and currently contribute to 
+                software development in the aviation industry. During IT consulting, 
+                I worked on legacy systems over 20 years old, which was both a challenge and a 
+                lesson in managing technical debt and feature creep. Through my personal projects, 
+                as well as my work at Aviation iSolutions and Saab, I’ve gained extensive experience in 
+                full-stack development using modern frameworks like React, Node.js, Docker, and Vue. I’ve 
+                built CI/CD pipelines, configured reverse proxies, and optimized applications for 
+                performance and maintainability.
+              </p>
+              <p className="leading-relaxed text-gray-300 mt-4">
+                I enjoy solving complex problems, collaborating in cross-functional teams, 
+                and continuously learning new technologies. My goal is to contribute to 
+                innovative software projects that have real-world impact while continuously 
+                expanding my technical expertise and adapting to the evolving landscape of IT.
               </p>
             </section>
 
             <section className="mb-8">
-              <h2 className="text-xl font-semibold mb-3 text-gray-300">
-                Projects
-              </h2>
-              <ul className="space-y-2">
-                {projects.map((p) => (
-                  <li
-                    key={p.name}
-                    className="p-4 rounded border bg-white shadow-sm"
-                  >
-                    <div className="flex items-center justify-between">
-                      <a
-                        href={p.link}
-                        className="font-medium text-blue-600 hover:underline"
-                      >
-                        {p.name}
-                      </a>
-                      <div className="text-sm text-slate-500">
-                        {p.tech.join(" • ")}
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+            
               <div className="w-full relative flex justify-left flex-wrap">
                 <a href="#section-timeline" className="text-lg m-6 group font-bold relative w-max border-2 border-green-600 text-green-300">
                   <span className="m-2">Career Timeline</span>
@@ -89,6 +73,11 @@ export default function App() {
                 </a>
                 <a href="#section-projects" className="text-lg m-6 group font-bold relative w-max border-2 border-green-600 text-green-300">
                   <span className="m-2">Projects</span>
+                  <span className="absolute -bottom-2 left-1/2 w-0 transition-all h-0.5 bg-green-600 group-hover:w-3/6"></span>
+                  <span className="absolute -bottom-2 right-1/2 w-0 transition-all h-0.5 bg-green-600 group-hover:w-3/6"></span>
+                </a>
+                <a href="#section-contacts" className="text-lg m-6 group font-bold relative w-max border-2 border-green-600 text-green-300">
+                  <span className="m-2">Contacts</span>
                   <span className="absolute -bottom-2 left-1/2 w-0 transition-all h-0.5 bg-green-600 group-hover:w-3/6"></span>
                   <span className="absolute -bottom-2 right-1/2 w-0 transition-all h-0.5 bg-green-600 group-hover:w-3/6"></span>
                 </a>
@@ -126,12 +115,29 @@ export default function App() {
       </div>
   </section>
   {/* PROJECTS SECTION */}
-  <section id="section-projects" className="relative w-[90%] md:w-[60%] sm:mx-auto shadow-lg text-white" style={{ background: "#49b7f2ff" }}>
-    <div className="max-w-4xl mx-auto px-6">
+  <section id="section-projects" className="relative w-[90%] md:w-[60%] sm:mx-auto text-white" style={{ background: "#49b7f2ff" }}>
+    <div className="max-w-4xl mx-auto px-6 pb-32">
         <Projects />
       </div>
+      <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] sm:mx-auto">
+        <svg
+          className="relative block w-full h-[80px]"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
+          viewBox="0 0 1200 120"
+        >
+          <path d="M0 0L1200 120L0 120V0Z" fill="#1f2937" />
+        </svg>
+      </div>
   </section>
+  {/* CONTACTS SECTION */}
+  <section id="section-contacts" className="w-[90%] md:w-[60%] sm:mx-auto text-white" style={{ background: "#1f2937" }}>
+    <div className="max-w-4xl mx-auto px-6 pb-32">
+        <Contacts />
+      </div>
+    </section>
   {/* FOOTER */}
+  <Footer />
       </div >
     </div >
   );

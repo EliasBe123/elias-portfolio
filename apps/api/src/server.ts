@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import healthRouter from "./routes/health.js";
 import db from "./db.js";
 import statsRouter from "./routes/stats.js";
+import readmeRouter from "./routes/readme.js";
 
 
 
@@ -32,6 +33,7 @@ app.use(express.static(staticDir, { maxAge: '30d', index: false }));
 
 // --- API routes ---
 app.use("/api/stats", statsRouter);
+app.use("/api/readme", readmeRouter);
 app.use("/api", healthRouter);
 
 // --- SPA fallback for all other frontend routes ---

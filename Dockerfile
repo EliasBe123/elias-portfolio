@@ -24,6 +24,8 @@ WORKDIR /app
 # Install backend dependencies
 COPY apps/api/package*.json ./apps/api/
 WORKDIR /app/apps/api
+RUN apk add --no-cache python3 make g++
+
 RUN npm install
 
 # Copy backend source

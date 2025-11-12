@@ -18,6 +18,7 @@ router.get("/visits", (_req, res) => {
   `);
 
   const data = stmt.all();
+  console.log("Visits data:", data);
   res.json(data);
 });
 
