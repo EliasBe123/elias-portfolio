@@ -47,27 +47,39 @@ jobs:
           PI_USER: ${{ secrets.PI_USER }}
         run: |
           set -euo pipefail
-      
+
           echo "Starting SSH agent..."
           eval "$(ssh-agent -s)"
-      
+
           # Add keys
           echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '\r' | ssh-add -
           echo "${{ secrets.PI_SSH_KEY }}" | tr -d '\r' | ssh-add -
-      
-          # Ensure known_hosts exists
+
           mkdir -p ~/.ssh
           touch ~/.ssh/known_hosts
-      
+
           echo "Testing connection to VPS..."
           ssh -o StrictHostKeyChecking=no deploy@$VPS_HOST "echo Connected to VPS"
-      
+
           echo "Testing connection to Pi via VPS..."
           ssh -A -o StrictHostKeyChecking=no -J deploy@$VPS_HOST $PI_USER@$PI_HOST "echo Connected to Pi"
-      
+
           echo "Copying docker-compose.yml to Pi..."
           scp -o StrictHostKeyChecking=no -J deploy@$VPS_HOST ./infra/pi/docker-compose.yml $PI_USER@$PI_HOST:~/deploy/docker-compose.yml
-      
+
+          echo "Cleaning up old Docker images on Pi..."
+          ssh -A -o StrictHostKeyChecking=no -J deploy@$VPS_HOST $PI_USER@$PI_HOST "
+            set -e
+            # Remove stopped containers
+            docker container prune -f || true
+
+            # Remove dangling images (unused images not referenced by any container)
+            docker image prune -f || true
+
+            # Remove images older than 7 days
+            docker images --format '{{.Repository}}:{{.Tag}} {{.CreatedSince}}' | grep 'weeks\|months\|years' | awk '{print \$1}' | xargs -r docker rmi -f || true
+          "
+
           echo "Deploying Docker image on Pi..."
           ssh -A -o StrictHostKeyChecking=no -J deploy@$VPS_HOST $PI_USER@$PI_HOST "
             set -e
@@ -76,3 +88,4 @@ jobs:
             docker compose down || true
             docker compose up -d --build
           "
+
