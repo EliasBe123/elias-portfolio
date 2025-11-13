@@ -88,58 +88,58 @@ jobs:
             docker compose down || true
             docker compose up -d --build
           "
-security-scan:
-  runs-on: ubuntu-latest
-  needs: build-and-deploy
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Prepare SSH keys and known_hosts
-      run: |
-        mkdir -p ~/.ssh
-        chmod 700 ~/.ssh
-        touch ~/.ssh/known_hosts
-        chmod 644 ~/.ssh/known_hosts
+      - name: Prepare SSH keys and known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          touch ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
-        # Add VPS and Pi to known_hosts
-        ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
-        ssh-keyscan -H ${{ secrets.PI_HOST }} >> ~/.ssh/known_hosts
+          # Add VPS and Pi to known_hosts
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.PI_HOST }} >> ~/.ssh/known_hosts
 
-    - name: SSH tunnel + OWASP ZAP scan
-      env:
-        PI_USER: ${{ secrets.PI_USER }}
-        PI_HOST: ${{ secrets.PI_HOST }}
-        VPS_HOST: ${{ secrets.VPS_HOST }}
-        STAGING_URL: ${{ env.STAGING_URL }}
-      run: |
-        set -euo pipefail
+      - name: SSH tunnel + OWASP ZAP scan
+        env:
+          PI_USER: ${{ secrets.PI_USER }}
+          PI_HOST: ${{ secrets.PI_HOST }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          STAGING_URL: ${{ env.STAGING_URL }}
+        run: |
+          set -euo pipefail
 
-        echo "Starting SSH agent..."
-        eval "$(ssh-agent -s)"
+          echo "Starting SSH agent..."
+          eval "$(ssh-agent -s)"
 
-        # Add SSH keys
-        echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '\r' | ssh-add -
-        echo "${{ secrets.PI_SSH_KEY }}" | tr -d '\r' | ssh-add -
+          # Add SSH keys
+          echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '\r' | ssh-add -
+          echo "${{ secrets.PI_SSH_KEY }}" | tr -d '\r' | ssh-add -
 
-        # Start SSH tunnel in background
-        ssh -f -N -L 3000:localhost:3000 \
-          -o StrictHostKeyChecking=no \
-          -J deploy@$VPS_HOST \
-          $PI_USER@$PI_HOST
-        echo "SSH tunnel established to Pi"
+          # Start SSH tunnel in background
+          ssh -f -N -L 3000:localhost:3000 \
+            -o StrictHostKeyChecking=no \
+            -J deploy@$VPS_HOST \
+            $PI_USER@$PI_HOST
+          echo "SSH tunnel established to Pi"
 
-        # Run OWASP ZAP baseline scan in the same shell/session
-        echo "Running OWASP ZAP scan..."
-        npx zaproxy-action-baseline \
-          --target $STAGING_URL \
-          --rules-file ./zap-rules.json \
-          --cmd-options "-r zap-report.html -z \"includeInContext('API Context','^$STAGING_URL/api/.*');\" -z \"spider.baseUrl=$STAGING_URL\""
+          # Run OWASP ZAP baseline scan in the same shell/session
+          echo "Running OWASP ZAP scan..."
+          npx zaproxy-action-baseline \
+            --target $STAGING_URL \
+            --rules-file ./zap-rules.json \
+            --cmd-options "-r zap-report.html -z \"includeInContext('API Context','^$STAGING_URL/api/.*');\" -z \"spider.baseUrl=$STAGING_URL\""
 
-    - name: Upload ZAP Report
-      uses: actions/upload-artifact@v4
-      with:
-        name: zap-report
-        path: zap-report.html
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: zap-report.html
 
 
