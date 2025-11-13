@@ -1,0 +1,54 @@
+{
+  "rules": [
+    {
+      "id": "10001",
+      "alert": "X-Powered-By Header Disclosure",
+      "enabled": false
+    },
+    {
+      "id": "10002",
+      "alert": "Web Browser XSS Protection Header Not Set",
+      "enabled": false
+    },
+    {
+      "id": "10003",
+      "alert": "Content Security Policy (CSP) Not Set",
+      "enabled": false
+    },
+    {
+      "id": "10004",
+      "alert": "HTML5/JS Warnings",
+      "enabled": false
+    },
+    {
+      "id": "10005",
+      "alert": "Cookie Without HttpOnly Flag",
+      "enabled": true
+    },
+    {
+      "id": "10006",
+      "alert": "Cookie Without Secure Flag",
+      "enabled": true
+    },
+    {
+      "id": "10007",
+      "alert": "Cross-Site Scripting (XSS)",
+      "enabled": true
+    },
+    {
+      "id": "10008",
+      "alert": "SQL Injection",
+      "enabled": true
+    },
+    {
+      "id": "10009",
+      "alert": "Directory/File Exposure",
+      "enabled": true
+    },
+    {
+      "id": "10010",
+      "alert": "Server Misconfiguration",
+      "enabled": true
+    }
+  ]
+}
