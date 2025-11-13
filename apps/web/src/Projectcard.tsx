@@ -9,6 +9,7 @@ type Project = {
   description?: string;
   githubUser?: string;
   githubRepo?: string;
+  usereadme?: boolean;
 };
 
 export default function ProjectCard({ project }: { project: Project }) {
@@ -18,7 +19,7 @@ export default function ProjectCard({ project }: { project: Project }) {
 
   useEffect(() => {
     const fetchReadme = async () => {
-      if (!open || !project.githubUser || !project.githubRepo) return;
+      if (!open || !project.githubUser || !project.githubRepo || project.usereadme == false) return;
 
       setLoading(true);
       try {

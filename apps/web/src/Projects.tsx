@@ -14,13 +14,17 @@ const projects = [
     image: "/2048.png",
     tech: ["Python", "TensorFlow"],
     description: "A neural network implementation of the 2048 game using deep learning techniques.",
- 
+    githubUser: "EliasBe123",
+    githubRepo: "EvolutionML",
   },
   {
     title: "Pubcrawl Planner",
     image: "/pubcrawl.png",
     tech: ["C", "Traveling Salesman Problem", "Held-Karp Algorithm"],
     description: "A pub crawl planning application to optimize routes.",
+    githubUser: "X-non",
+    githubRepo: "pkd-project",
+    usereadme: false,
   },
 ];
 
