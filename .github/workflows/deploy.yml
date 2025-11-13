@@ -96,15 +96,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Prepare SSH keys and known_hosts
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          PI_HOST: ${{ secrets.PI_HOST }}
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
           touch ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-          # Add VPS and Pi to known_hosts
-          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
-          ssh-keyscan -H ${{ secrets.PI_HOST }} >> ~/.ssh/known_hosts
+          # Add VPS and Pi to known_hosts, ignore errors/banners
+          for host in "$VPS_HOST" "$PI_HOST"; do
+            ssh-keyscan -H "$host" >> ~/.ssh/known_hosts 2>/dev/null || true
+          done
 
       - name: SSH tunnel + OWASP ZAP scan
         env:
@@ -127,6 +131,7 @@ jobs:
             -o StrictHostKeyChecking=no \
             -J deploy@$VPS_HOST \
             $PI_USER@$PI_HOST
+
           echo "SSH tunnel established to Pi"
 
           # Run OWASP ZAP baseline scan in the same shell/session
@@ -141,5 +146,3 @@ jobs:
         with:
           name: zap-report
           path: zap-report.html
-
-
