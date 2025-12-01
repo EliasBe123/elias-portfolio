@@ -13,24 +13,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # 3️⃣ Log in to Docker Hub
       - name: Docker Hub login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-      # 4️⃣ Build and push Docker image for Pi 5 (ARM64)
+
       - name: Build and push Docker image for Pi 5
         run: |
           docker buildx create --use
@@ -39,7 +35,6 @@ jobs:
             -t eliasbe123/elias-portfolio:latest \
             --push .
 
-      # 5️⃣ Deploy to Pi via VPS
       - name: Deploy on Pi via VPS
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
@@ -51,7 +46,6 @@ jobs:
           echo "Starting SSH agent..."
           eval "$(ssh-agent -s)"
 
-          # Add keys
           echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '\r' | ssh-add -
           echo "${{ secrets.PI_SSH_KEY }}" | tr -d '\r' | ssh-add -
 
@@ -70,14 +64,8 @@ jobs:
           echo "Cleaning up old Docker images on Pi..."
           ssh -A -o StrictHostKeyChecking=no -J deploy@$VPS_HOST $PI_USER@$PI_HOST "
             set -e
-            # Remove stopped containers
             docker container prune -f || true
-
-            # Remove dangling images (unused images not referenced by any container)
             docker image prune -f || true
-
-            # Remove images older than 7 days
-            docker images --format '{{.Repository}}:{{.Tag}} {{.CreatedSince}}' | grep 'weeks\|months\|years' | awk '{print \$1}' | xargs -r docker rmi -f || true
           "
 
           echo "Deploying Docker image on Pi..."
@@ -88,58 +76,41 @@ jobs:
             docker compose down || true
             docker compose up -d --build
           "
+
   security-scan:
     runs-on: ubuntu-latest
     needs: build-and-deploy
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Prepare SSH keys and known_hosts
+      - name: Start SSH Tunnel
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           PI_HOST: ${{ secrets.PI_HOST }}
-        run: |
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          touch ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-
-          # Add VPS and Pi to known_hosts, ignore errors/banners
-          for host in "$VPS_HOST" "$PI_HOST"; do
-            ssh-keyscan -H "$host" >> ~/.ssh/known_hosts 2>/dev/null || true
-          done
-
-      - name: SSH tunnel + OWASP ZAP scan
-        env:
           PI_USER: ${{ secrets.PI_USER }}
-          PI_HOST: ${{ secrets.PI_HOST }}
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          STAGING_URL: ${{ env.STAGING_URL }}
         run: |
           set -euo pipefail
 
           echo "Starting SSH agent..."
           eval "$(ssh-agent -s)"
 
-          # Add SSH keys
           echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '\r' | ssh-add -
           echo "${{ secrets.PI_SSH_KEY }}" | tr -d '\r' | ssh-add -
 
-          # Start SSH tunnel in background
           ssh -f -N -L 3000:localhost:3000 \
             -o StrictHostKeyChecking=no \
             -J deploy@$VPS_HOST \
             $PI_USER@$PI_HOST
 
-          echo "SSH tunnel established to Pi"
+          echo "SSH tunnel established → localhost:3000 now points to the Pi server"
 
-          # Run OWASP ZAP baseline scan in the same shell/session
-          echo "Running OWASP ZAP scan..."
-          npx zaproxy-action-baseline \
-            --target $STAGING_URL \
-            --rules-file ./zap-rules.json \
-            --cmd-options "-r zap-report.html -z \"includeInContext('API Context','^$STAGING_URL/api/.*');\" -z \"spider.baseUrl=$STAGING_URL\""
+      - name: Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: "http://localhost:3000"
+          cmd_options: "-r zap-report.html"
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
