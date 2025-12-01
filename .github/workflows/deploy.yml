@@ -125,15 +125,18 @@ jobs:
       - name: Run OWASP ZAP Baseline Scan
         run: |
           echo "Starting ZAP Baseline Scan..."
+
+          # Pull zap-stable
           docker pull zaproxy/zap-stable:latest
-          docker run --rm -v "$(pwd)":/zap/wrk/:rw \
+
+          # Run ZAP with host networking so it can hit localhost:3000
+          docker run --rm \
+            --network host \
+            -u zap \
+            -v "$(pwd)":/zap/wrk/:rw \
             zaproxy/zap-stable:latest \
             zap-baseline.py \
             -t http://localhost:3000 \
-            -r zap-report.html
+            -r zap-report.html \
+            -J zap_out.json
 
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: zap-report
-          path: zap-report.html
