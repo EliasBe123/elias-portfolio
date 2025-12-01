@@ -96,11 +96,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Start SSH Tunnel
+      - name: Start SSH tunnel to Pi
         env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          PI_HOST: ${{ secrets.PI_HOST }}
           PI_USER: ${{ secrets.PI_USER }}
+          PI_HOST: ${{ secrets.PI_HOST }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
         run: |
           set -euo pipefail
 
@@ -110,18 +110,26 @@ jobs:
           echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '\r' | ssh-add -
           echo "${{ secrets.PI_SSH_KEY }}" | tr -d '\r' | ssh-add -
 
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh-keyscan -H "$PI_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+          echo "Opening tunnel..."
           ssh -f -N -L 3000:localhost:3000 \
             -o StrictHostKeyChecking=no \
             -J deploy@$VPS_HOST \
             $PI_USER@$PI_HOST
 
-          echo "SSH tunnel established → localhost:3000 now points to the Pi server"
+          echo "Tunnel ready → http://localhost:3000"
 
       - name: Run OWASP ZAP Baseline Scan
-        uses: zaproxy/action-baseline@v0.10.0
-        with:
-          target: "http://localhost:3000"
-          cmd_options: "-r zap-report.html"
+        run: |
+          echo "Starting ZAP Baseline Scan..."
+
+          docker run --rm -v $(pwd):/zap/wrk/:rw \
+            owasp/zap2docker-stable zap-baseline.py \
+              -t http://localhost:3000 \
+              -r zap-report.html
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v4
