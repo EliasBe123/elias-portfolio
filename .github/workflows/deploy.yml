@@ -128,19 +128,14 @@ jobs:
 
           docker pull zaproxy/zap-stable:latest
 
-          # Run ZAP with:
-          # --network host → access to localhost:3000 through SSH tunnel
-          # --user $(id -u):$(id -g) → ZAP can write reports into repo folder
-          # -v $(pwd):/zap/wrk → store reports here
           docker run --rm \
             --network host \
             --user "$(id -u):$(id -g)" \
             -v "$(pwd)":/zap/wrk \
             zaproxy/zap-stable:latest \
             zap-baseline.py \
+            --autooff \
             -t http://localhost:3000 \
             -r zap-report.html \
             -J zap_out.json \
             -x zap.xml
-
-
