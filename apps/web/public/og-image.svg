@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#312e81"/>
+      <stop offset="100%" stop-color="#064e3b"/>
+    </linearGradient>
+    <linearGradient id="text" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="50%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <text x="80" y="320" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="96" fill="url(#text)">Elias Benjaminsson</text>
+  <text x="80" y="390" font-family="Inter, system-ui, sans-serif" font-weight="500" font-size="38" fill="#cbd5e1">Software Developer · Civil Engineering Student</text>
+  <text x="80" y="450" font-family="Inter, system-ui, sans-serif" font-weight="400" font-size="28" fill="#94a3b8">eliasbenjaminsson.dev</text>
+</svg>

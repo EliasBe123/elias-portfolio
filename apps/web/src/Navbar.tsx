@@ -1,26 +1,33 @@
+import { useActiveSection } from "./hooks/useActiveSection";
+
 export default function Navbar() {
+  const active = useActiveSection(["about", "section-projects", "section-contacts"]);
+  const linkCls = (id: string) =>
+    `px-3 py-1.5 rounded-md transition ${
+      active === id
+        ? "text-emerald-300 bg-white/10"
+        : "text-gray-100 hover:bg-white/10"
+    }`;
+
   return (
-    <nav className="glass fixed top-0 w-full z-50 text-gray-100">
+    <nav aria-label="Primary" className="glass fixed top-0 w-full z-50 text-gray-100">
       <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
-        <a href="/" className="font-bold tracking-tight text-lg gradient-text">
+        <a href="/" className="font-bold tracking-tight text-lg gradient-text" aria-label="Home — eliasbenjaminsson.dev">
           eliasbenjaminsson.dev
         </a>
         <div className="flex items-center gap-2 sm:gap-4 text-sm sm:text-base">
-          <a
-            href="/"
-            className="px-3 py-1.5 rounded-md hover:bg-white/10 transition"
-          >
-            Home
+          <a href="#about" className={linkCls("about") + " hidden sm:inline-block"}>
+            About
           </a>
           <a
             href="#section-projects"
-            className="px-3 py-1.5 rounded-md hover:bg-white/10 transition hidden sm:inline-block"
+            className={linkCls("section-projects") + " hidden sm:inline-block"}
           >
             Projects
           </a>
           <a
             href="#section-contacts"
-            className="px-3 py-1.5 rounded-md hover:bg-white/10 transition hidden sm:inline-block"
+            className={linkCls("section-contacts") + " hidden sm:inline-block"}
           >
             Contact
           </a>

@@ -9,6 +9,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-animated flex flex-col">
+      <a href="#about" className="skip-link">Skip to main content</a>
       <Navbar />
 
       {/* MAIN SECTION */}
