@@ -1,13 +1,35 @@
-import React from 'react';
-import { Link } from 'react-router-dom'; // if using react-router
-
 export default function Navbar() {
   return (
-    <nav className="bg-white dark:bg-gray-700 shadow-md fixed top-0 -0 w-full z-50 border-b border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-end items-center">
-        <div className="space-x-6">
-          <a href="/" className="hover:text-blue-600 border-r-2 pr-6">Home</a>
-          <a href="/dashboard" className="hover:text-blue-600">Dashboard</a>
+    <nav className="glass fixed top-0 w-full z-50 text-gray-100">
+      <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+        <a href="/" className="font-bold tracking-tight text-lg gradient-text">
+          eliasbenjaminsson.dev
+        </a>
+        <div className="flex items-center gap-2 sm:gap-4 text-sm sm:text-base">
+          <a
+            href="/"
+            className="px-3 py-1.5 rounded-md hover:bg-white/10 transition"
+          >
+            Home
+          </a>
+          <a
+            href="#section-projects"
+            className="px-3 py-1.5 rounded-md hover:bg-white/10 transition hidden sm:inline-block"
+          >
+            Projects
+          </a>
+          <a
+            href="#section-contacts"
+            className="px-3 py-1.5 rounded-md hover:bg-white/10 transition hidden sm:inline-block"
+          >
+            Contact
+          </a>
+          <a
+            href="/dashboard"
+            className="px-3 py-1.5 rounded-md bg-emerald-500/90 hover:bg-emerald-400 text-gray-900 font-semibold transition"
+          >
+            Dashboard
+          </a>
         </div>
       </div>
     </nav>
