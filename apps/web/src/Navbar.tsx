@@ -1,13 +1,20 @@
 import { useActiveSection } from "./hooks/useActiveSection";
+import StatusBadge from "./components/StatusBadge";
 
 export default function Navbar() {
-  const active = useActiveSection(["about", "section-projects", "section-contacts"]);
+  const onHome = typeof window !== "undefined" && window.location.pathname === "/";
+  const active = useActiveSection(
+    onHome ? ["about", "section-projects", "section-contacts"] : []
+  );
   const linkCls = (id: string) =>
     `px-3 py-1.5 rounded-md transition ${
-      active === id
+      onHome && active === id
         ? "text-emerald-300 bg-white/10"
         : "text-gray-100 hover:bg-white/10"
     }`;
+  // When not on the home page, anchor links must include the path so the
+  // browser navigates home first and then scrolls to the section.
+  const hash = (id: string) => (onHome ? `#${id}` : `/#${id}`);
 
   return (
     <nav aria-label="Primary" className="glass fixed top-0 w-full z-50 text-gray-100">
@@ -16,17 +23,17 @@ export default function Navbar() {
           eliasbenjaminsson.dev
         </a>
         <div className="flex items-center gap-2 sm:gap-4 text-sm sm:text-base">
-          <a href="#about" className={linkCls("about") + " hidden sm:inline-block"}>
+          <a href={hash("about")} className={linkCls("about") + " hidden sm:inline-block"}>
             About
           </a>
           <a
-            href="#section-projects"
+            href={hash("section-projects")}
             className={linkCls("section-projects") + " hidden sm:inline-block"}
           >
             Projects
           </a>
           <a
-            href="#section-contacts"
+            href={hash("section-contacts")}
             className={linkCls("section-contacts") + " hidden sm:inline-block"}
           >
             Contact
@@ -37,6 +44,7 @@ export default function Navbar() {
           >
             Dashboard
           </a>
+          <StatusBadge />
         </div>
       </div>
     </nav>

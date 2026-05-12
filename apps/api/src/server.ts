@@ -6,6 +6,7 @@ import healthRouter from "./routes/health.js";
 import db from "./db.js";
 import statsRouter from "./routes/stats.js";
 import readmeRouter from "./routes/readme.js";
+import deployInfoRouter from "./routes/deploy-info.js";
 
 
 
@@ -35,6 +36,7 @@ app.use(express.static(staticDir, { maxAge: '30d', index: false }));
 app.use("/api/stats", statsRouter);
 app.use("/api/readme", readmeRouter);
 app.use("/api", healthRouter);
+app.use("/api", deployInfoRouter);
 
 // --- SPA fallback for all other frontend routes ---
 app.get('*', (_req, res) => {

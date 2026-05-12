@@ -7,6 +7,7 @@ import Dashboard from './Dashboard';
 import Timeline from './Timeline';
 import Contacts from './Contacts';
 import NotFound from './NotFound';
+import Status from './Status';
 document.documentElement.classList.add('dark');
 
 createRoot(document.getElementById('root')!).render(
@@ -16,6 +17,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/" element={<App />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/timeline" element={<Timeline />} />
+        <Route path="/status" element={<Status />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

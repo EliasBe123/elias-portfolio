@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { FaGithub } from "react-icons/fa";
+import { SkeletonText } from "./components/Skeleton";
 
 type Project = {
   title: string;
@@ -116,7 +117,7 @@ export default function ProjectCard({ project }: { project: Project }) {
 
             {/* Description / README */}
             {loading ? (
-              <p className="text-gray-500 italic">Loading README...</p>
+              <SkeletonText lines={6} />
             ) : readme ? (
               <div className="prose max-w-none text-gray-700">
                 <ReactMarkdown>{readme}</ReactMarkdown>
