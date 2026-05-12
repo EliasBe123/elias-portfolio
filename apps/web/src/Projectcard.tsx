@@ -9,6 +9,7 @@ type Project = {
   description?: string;
   githubUser?: string;
   githubRepo?: string;
+  usereadme?: boolean;
 };
 
 export default function ProjectCard({ project }: { project: Project }) {
@@ -18,7 +19,7 @@ export default function ProjectCard({ project }: { project: Project }) {
 
   useEffect(() => {
     const fetchReadme = async () => {
-      if (!open || !project.githubUser || !project.githubRepo) return;
+      if (!open || !project.githubUser || !project.githubRepo || project.usereadme == false) return;
 
       setLoading(true);
       try {
@@ -42,16 +43,27 @@ export default function ProjectCard({ project }: { project: Project }) {
       {/* --- Project Card --- */}
       <div
         onClick={() => setOpen(true)}
-        className="cursor-pointer bg-gray-800 rounded-lg shadow-md overflow-hidden hover:scale-105 transition"
+        className="group cursor-pointer bg-gray-900/70 backdrop-blur-md rounded-xl overflow-hidden border border-white/10 hover-lift glow-ring"
       >
-        <img
-          src={project.image}
-          alt={project.title}
-          className="w-full h-48 object-cover"
-        />
+        <div className="overflow-hidden">
+          <img
+            src={project.image}
+            alt={project.title}
+            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
         <div className="p-4">
           <h3 className="text-lg font-bold text-white">{project.title}</h3>
-          <p className="text-sm text-gray-400">{project.tech.join(", ")}</p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {project.tech.map((t) => (
+              <span
+                key={t}
+                className="text-[11px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-400/30"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
