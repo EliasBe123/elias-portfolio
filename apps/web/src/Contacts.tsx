@@ -44,7 +44,6 @@ export default function Contacts() {
               href={contact.href}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`${contact.name}: ${contact.username}`}
               className={`group flex items-center gap-4 px-5 py-3 rounded-xl
                 bg-white/5 border border-white/10 backdrop-blur-md
                 w-full sm:w-4/5 md:w-3/5 hover-lift glow-ring ${contact.accent}`}

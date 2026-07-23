@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './Navbar';
-import { Skeleton } from './components/Skeleton';
 import {
   LineChart,
   Line,
@@ -69,17 +68,7 @@ export default function Dashboard() {
       <main className="max-w-4xl mx-auto p-6 pt-20 space-y-8">
         <h1 className="text-3xl font-bold text-center">Server Dashboard</h1>
 
-        {loading && (
-          <div className="space-y-4">
-            <Skeleton className="h-16 w-full" />
-            <div className="flex gap-2">
-              <Skeleton className="h-8 w-20" />
-              <Skeleton className="h-8 w-20" />
-              <Skeleton className="h-8 w-24" />
-            </div>
-            <Skeleton className="h-64 w-full" />
-          </div>
-        )}
+        {loading && <p>Loading server status...</p>}
         {error && <p className="text-red-600">Error: {error}</p>}
 
         {latest && (

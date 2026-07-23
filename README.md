@@ -1,6 +1,6 @@
 # Elias Benjaminsson - Portfolio Website
 
-A modern, full-stack personal portfolio website showcasing projects, career timeline, and professional experience. This site demonstrates proficiency in contemporary web development technologies and infrastructure management, running entirely on a self-hosted Raspberry Pi 5 with enterprise-grade deployment practices.
+A modern, fullstack personal portfolio website showcasing projects, career timeline, and professional experience. This site demonstrates proficiency in contemporary web development technologies and infrastructure management, running entirely on a self-hosted Raspberry Pi 5 with enterprise-grade deployment practices.
 
 ## Overview
 
@@ -145,4 +145,3 @@ This is a personal portfolio project, but feedback and suggestions are welcome! 
 This project is personal and proprietary. Please contact for usage rights.
 
 
-*Built with ❤️ using React, TypeScript, and modern web technologies*

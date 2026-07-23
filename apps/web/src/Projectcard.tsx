@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { FaGithub } from "react-icons/fa";
-import { SkeletonText } from "./components/Skeleton";
 
 type Project = {
   title: string;
@@ -13,62 +12,193 @@ type Project = {
   usereadme?: boolean;
 };
 
+type ReadmeData = {
+  readme: string;
+  rawBaseUrl: string;
+  githubBaseUrl: string;
+};
+
+type ReadmeMedia = {
+  type: "image" | "video";
+  url: string;
+  start: number;
+  end: number;
+};
+
+const videoPattern = /\.(mov|mp4|webm)(?:[?#].*)?$/i;
+
+function resolveUrl(path: string, baseUrl: string) {
+  try {
+    return new URL(path, baseUrl).toString();
+  } catch {
+    return path;
+  }
+}
+
+function firstReadmeMedia(markdown: string, rawBaseUrl: string): ReadmeMedia | null {
+  const matches: ReadmeMedia[] = [];
+  const markdownImage = /!\[[^\]]*\]\(\s*(?:<([^>]+)>|([^\s)]+))(?:\s+["'][^"']*["'])?\s*\)/gi;
+  const markdownLink = /\[[^\]]+\]\(\s*(?:<([^>]+)>|([^\s)]+))(?:\s+["'][^"']*["'])?\s*\)/gi;
+  const htmlMedia = /<(img|video)\b[^>]*?\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi;
+
+  for (const match of markdown.matchAll(markdownImage)) {
+    const source = match[1] || match[2];
+    matches.push({
+      type: videoPattern.test(source) ? "video" : "image",
+      url: resolveUrl(source, rawBaseUrl),
+      start: match.index,
+      end: match.index + match[0].length,
+    });
+  }
+
+  for (const match of markdown.matchAll(markdownLink)) {
+    if (match.index > 0 && markdown[match.index - 1] === "!") continue;
+    const source = match[1] || match[2];
+    if (!videoPattern.test(source)) continue;
+    matches.push({
+      type: "video",
+      url: resolveUrl(source, rawBaseUrl),
+      start: match.index,
+      end: match.index + match[0].length,
+    });
+  }
+
+  for (const match of markdown.matchAll(htmlMedia)) {
+    matches.push({
+      type: match[1].toLowerCase() === "video" ? "video" : "image",
+      url: resolveUrl(match[2], rawBaseUrl),
+      start: match.index,
+      end: match.index + match[0].length,
+    });
+  }
+
+  matches.sort((left, right) => left.start - right.start);
+  return matches[0] || null;
+}
+
+function ProjectMedia({
+  media,
+  fallback,
+  title,
+  className,
+  onError,
+}: {
+  media: ReadmeMedia | null;
+  fallback: string;
+  title: string;
+  className: string;
+  onError: () => void;
+}) {
+  if (media?.type === "video") {
+    return (
+      <video
+        src={media.url}
+        poster={fallback}
+        controls
+        preload="metadata"
+        playsInline
+        className={className}
+        onClick={(event) => event.stopPropagation()}
+        onError={onError}
+      />
+    );
+  }
+
+  return (
+    <img
+      src={media?.url || fallback}
+      alt={title}
+      className={className}
+      onError={onError}
+    />
+  );
+}
+
 export default function ProjectCard({ project }: { project: Project }) {
   const [open, setOpen] = useState(false);
-  const [readme, setReadme] = useState<string | null>(null);
+  const [readmeData, setReadmeData] = useState<ReadmeData | null>(null);
+  const [readmeMedia, setReadmeMedia] = useState<ReadmeMedia | null>(null);
+  const [mediaFailed, setMediaFailed] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchReadme = async () => {
-      if (!open || !project.githubUser || !project.githubRepo || project.usereadme == false) return;
+    if (!project.githubUser || !project.githubRepo || project.usereadme === false) {
+      setReadmeData(null);
+      setReadmeMedia(null);
+      return;
+    }
 
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `/api/readme/${project.githubUser}/${project.githubRepo}`
-        );
-        const data = await res.json();
-        setReadme(data.readme);
-      } catch (err) {
-        console.error("Failed to fetch README:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const controller = new AbortController();
+    setLoading(true);
+    setMediaFailed(false);
 
-    fetchReadme();
-  }, [open, project.githubUser, project.githubRepo]);
+    fetch(`/api/readme/${project.githubUser}/${project.githubRepo}`, {
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("README request failed");
+        return response.json() as Promise<ReadmeData>;
+      })
+      .then((data) => {
+        setReadmeData(data);
+        setReadmeMedia(firstReadmeMedia(data.readme, data.rawBaseUrl));
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") {
+          console.error("Failed to fetch README:", error);
+          setReadmeData(null);
+          setReadmeMedia(null);
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [project.githubUser, project.githubRepo, project.usereadme]);
+
+  const media = mediaFailed ? null : readmeMedia;
+  const markdown = readmeData
+    ? media
+      ? `${readmeData.readme.slice(0, media.start)}${readmeData.readme.slice(media.end)}`
+      : readmeData.readme
+    : null;
+
+  const resolveReadmeMedia = (source?: string) =>
+    source && readmeData ? resolveUrl(source, readmeData.rawBaseUrl) : source;
+  const resolveReadmeLink = (source?: string) =>
+    source && readmeData ? resolveUrl(source, readmeData.githubBaseUrl) : source;
 
   return (
     <>
-      {/* --- Project Card --- */}
       <div
         onClick={() => setOpen(true)}
         className="group cursor-pointer bg-gray-900/70 backdrop-blur-md rounded-xl overflow-hidden border border-white/10 hover-lift glow-ring"
       >
         <div className="overflow-hidden">
-          <img
-            src={project.image}
-            alt={project.title}
+          <ProjectMedia
+            media={media}
+            fallback={project.image}
+            title={project.title}
             className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={() => setMediaFailed(true)}
           />
         </div>
         <div className="p-4">
           <h3 className="text-lg font-bold text-white">{project.title}</h3>
           <div className="mt-2 flex flex-wrap gap-1.5">
-            {project.tech.map((t) => (
+            {project.tech.map((tech) => (
               <span
-                key={t}
+                key={tech}
                 className="text-[11px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-400/30"
               >
-                {t}
+                {tech}
               </span>
             ))}
           </div>
         </div>
       </div>
 
-      {/* --- Modal --- */}
       {open && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black/70 z-50"
@@ -76,16 +206,11 @@ export default function ProjectCard({ project }: { project: Project }) {
         >
           <div
             className="bg-white p-6 rounded-lg max-w-lg w-full overflow-y-auto max-h-[90vh]"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
           >
-            {/* Header Row */}
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-slate-700">
-                {project.title}
-              </h2>
-
+              <h2 className="text-xl font-bold text-slate-700">{project.title}</h2>
               <div className="flex items-center gap-2">
-                {/* GitHub Button */}
                 {project.githubUser && project.githubRepo && (
                   <a
                     href={`https://github.com/${project.githubUser}/${project.githubRepo}`}
@@ -97,8 +222,6 @@ export default function ProjectCard({ project }: { project: Project }) {
                     <span>GitHub</span>
                   </a>
                 )}
-
-                {/* Close Button */}
                 <button
                   onClick={() => setOpen(false)}
                   className="px-3 py-1.5 bg-purple-600 text-white rounded hover:bg-purple-700 transition text-sm"
@@ -108,19 +231,46 @@ export default function ProjectCard({ project }: { project: Project }) {
               </div>
             </div>
 
-            {/* Image */}
-            <img
-              src={project.image}
-              alt={project.title}
-              className="w-full h-64 object-cover rounded mb-4"
+            <ProjectMedia
+              media={media}
+              fallback={project.image}
+              title={project.title}
+              className="w-full max-h-[28rem] object-contain bg-black rounded mb-4"
+              onError={() => setMediaFailed(true)}
             />
 
-            {/* Description / README */}
             {loading ? (
-              <SkeletonText lines={6} />
-            ) : readme ? (
+              <p className="text-gray-500 italic">Loading README...</p>
+            ) : markdown ? (
               <div className="prose max-w-none text-gray-700">
-                <ReactMarkdown>{readme}</ReactMarkdown>
+                <ReactMarkdown
+                  components={{
+                    img: ({ src, alt }) => (
+                      <img src={resolveReadmeMedia(src)} alt={alt || ""} />
+                    ),
+                    a: ({ href, children }) =>
+                      href && videoPattern.test(href) ? (
+                        <video
+                          src={resolveReadmeMedia(href)}
+                          poster={project.image}
+                          controls
+                          preload="metadata"
+                          playsInline
+                          className="w-full rounded"
+                        />
+                      ) : (
+                        <a
+                          href={resolveReadmeLink(href)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {children}
+                        </a>
+                      ),
+                  }}
+                >
+                  {markdown}
+                </ReactMarkdown>
               </div>
             ) : (
               <p className="text-gray-600">{project.description}</p>

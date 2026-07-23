@@ -76,29 +76,6 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.45); }
 
-/* a11y focus rings */
-:focus-visible {
-  outline: 2px solid #34d399;
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* skip-to-content link */
-.skip-link {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  background: #0f172a;
-  color: #fff;
-  padding: 8px 14px;
-  border-radius: 6px;
-  z-index: 1000;
-}
-.skip-link:focus {
-  left: 12px;
-  top: 12px;
-}
-
 @layer utilities {
   .typing {
     display: inline-block;

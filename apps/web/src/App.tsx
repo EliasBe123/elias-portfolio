@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import Navbar from "./Navbar";
 import Timeline from "./Timeline";
 import Projects from "./Projects";
@@ -7,24 +6,9 @@ import Contacts from "./Contacts";
 
 
 export default function App() {
-  // When arriving on the home page with a hash (e.g. /#about from another route),
-  // wait a tick for sections to mount, then scroll to the target.
-  useEffect(() => {
-    if (window.location.hash) {
-      const id = window.location.hash.slice(1);
-      // Two RAFs ensure layout (including images) has settled enough.
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          const el = document.getElementById(id);
-          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-        });
-      });
-    }
-  }, []);
 
   return (
     <div className="min-h-screen bg-animated flex flex-col">
-      <a href="#about" className="skip-link">Skip to main content</a>
       <Navbar />
 
       {/* MAIN SECTION */}

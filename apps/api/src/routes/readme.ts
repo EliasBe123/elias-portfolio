@@ -2,7 +2,6 @@ import express, { Request, Response } from "express";
 
 const router = express.Router();
 
-// Type for route parameters
 interface ReadmeParams {
   user: string;
   repo: string;
@@ -14,25 +13,26 @@ router.get(
     const { user, repo } = req.params;
 
     try {
-      // Try to fetch from main branch first
-      let url = `https://raw.githubusercontent.com/${user}/${repo}/main/README.md`;
-      let response = await fetch(url);
-      
+      let lastStatus = 404;
 
-      // If main doesn’t exist, fall back to master
-      if (!response.ok) {
-        url = `https://raw.githubusercontent.com/${user}/${repo}/master/README.md`;
-        response = await fetch(url);
+      for (const branch of ["main", "master"]) {
+        const rawBaseUrl = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/`;
+        const response = await fetch(`${rawBaseUrl}README.md`);
+        lastStatus = response.status;
+
+        if (!response.ok) continue;
+
+        const readme = await response.text();
+        res.set("Cache-Control", "public, max-age=300");
+        return res.json({
+          readme,
+          branch,
+          rawBaseUrl,
+          githubBaseUrl: `https://github.com/${user}/${repo}/blob/${branch}/`,
+        });
       }
 
-      if (!response.ok) {
-        return res
-          .status(response.status)
-          .json({ error: `Could not fetch README from ${url}` });
-      }
-
-      const markdown = await response.text();
-      res.json({ readme: markdown });
+      return res.status(lastStatus).json({ error: "Could not fetch README" });
     } catch (err) {
       console.error("Error fetching README:", err);
       res.status(500).json({ error: "Server error fetching README" });

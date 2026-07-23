@@ -1,5 +1,5 @@
 # ---------- Stage 1: Build frontend ----------
-FROM node:20-alpine AS frontend-build
+FROM node:22-alpine AS frontend-build
 
 WORKDIR /app
 
@@ -17,7 +17,7 @@ RUN npm run build
 
 
 # ---------- Stage 2: Build backend ----------
-FROM node:20-alpine AS backend-build
+FROM node:22-alpine AS backend-build
 
 WORKDIR /app
 
@@ -41,7 +41,7 @@ RUN npm run build
 
 
 # ---------- Stage 3: Final runtime ----------
-FROM node:20-alpine AS runtime
+FROM node:22-alpine AS runtime
 
 WORKDIR /app
 

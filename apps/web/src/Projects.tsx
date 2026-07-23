@@ -10,10 +10,10 @@ const projects = [
     githubRepo: "elias-portfolio",
   },
   {
-    title: "2048 Neural Network",
+    title: "Evolutionary 2048 AI",
     image: "/2048.png",
-    tech: ["Python", "TensorFlow"],
-    description: "A neural network implementation of the 2048 game using deep learning techniques.",
+    tech: ["Python", "Pygame", "Expectimax", "Genetic Algorithm"],
+    description: "An evolved 2048 agent with expectimax search and a playable Pygame viewer.",
     githubUser: "EliasBe123",
     githubRepo: "EvolutionML",
   },
