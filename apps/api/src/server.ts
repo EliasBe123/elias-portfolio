@@ -37,7 +37,7 @@ app.use("/api/readme", readmeRouter);
 app.use("/api", healthRouter);
 
 // --- SPA fallback for all other frontend routes ---
-app.get('*', (_req, res) => {
+app.get('/{*splat}', (_req, res) => {
   res.sendFile(path.join(staticDir, 'index.html'));
 });
 

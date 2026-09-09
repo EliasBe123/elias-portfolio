@@ -2,10 +2,10 @@ infra/pi/.env.example
 infra/pi/.env
 apps/api/.env.example
 apps/api/.env
+apps/api/db.sqlite
 
 apps/web/node_modules
 apps/api/node_modules
 
 apps/web/dist
 apps/api/dist
-

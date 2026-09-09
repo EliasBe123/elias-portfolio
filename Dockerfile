@@ -1,12 +1,12 @@
 # ---------- Stage 1: Build frontend ----------
-FROM node:20-alpine AS frontend-build
+FROM node:22-alpine AS frontend-build
 
 WORKDIR /app
 
 # Install frontend dependencies
 COPY apps/web/package*.json ./apps/web/
 WORKDIR /app/apps/web
-RUN npm install
+RUN npm ci
 
 # Copy frontend source
 COPY apps/web ./ 
@@ -17,7 +17,7 @@ RUN npm run build
 
 
 # ---------- Stage 2: Build backend ----------
-FROM node:20-alpine AS backend-build
+FROM node:22-alpine AS backend-build
 
 WORKDIR /app
 
@@ -26,7 +26,7 @@ COPY apps/api/package*.json ./apps/api/
 WORKDIR /app/apps/api
 RUN apk add --no-cache python3 make g++
 
-RUN npm install
+RUN npm ci
 
 # Copy backend source
 COPY apps/api ./ 
@@ -41,7 +41,7 @@ RUN npm run build
 
 
 # ---------- Stage 3: Final runtime ----------
-FROM node:20-alpine AS runtime
+FROM node:22-alpine AS runtime
 
 WORKDIR /app
 
@@ -60,4 +60,3 @@ EXPOSE 3000
 
 # Start backend (which should serve API + frontend from /web/dist)
 CMD ["node", "dist/server.js"]
-

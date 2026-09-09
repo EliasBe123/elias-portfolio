@@ -1,238 +1,148 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { BriefcaseBusiness, GraduationCap } from "lucide-react";
 
 const timelineData = [
   {
-    year: '2025',
-    period: 'Autumn',
-    company: 'Uppsala University',
-    role: 'Masters in Computer Science',
-    desc: 'Continuing my studies with a focus on data analysis, machine learning, and advanced algorithms.',
-    techStack: 'Statistics, Data Engineering, Natural Computing Methods For ML'
+    date: "Autumn 2025 - Present",
+    company: "Uppsala University",
+    role: "Master's in Computer Science",
+    type: "Education",
+    description:
+      "Continuing my studies with a focus on data analysis, machine learning, and advanced algorithms.",
+    technologies: [
+      "Statistics",
+      "Data Engineering",
+      "Natural Computing Methods for ML",
+    ],
   },
   {
-    year: '2025',
-    period: 'Summer',
-    company: 'Saab',
-    role: 'Software Developer',
-    desc: 'Worked on a drone detection application through the use of sensor fusion, fusing image detection and sound localization.',
-    techStack: 'C, Python, YOLOv13, FPGA'
+    date: "2024 - Present",
+    company: "Aviation iSolutions",
+    role: "Software Developer",
+    type: "Work",
+    description:
+      "Contributing to modern full-stack projects across frontend and backend development.",
+    technologies: ["JavaScript", "Vue", "Go", "PostgreSQL", "Docker"],
   },
   {
-    year: '2024–Now',
-    company: 'Aviation iSolutions',
-    role: 'Software Developer',
-    desc: 'Contributed to modern full-stack projects, including frontend and backend development.',
-    techStack: 'JavaScript, Vue, Go, Postgresql, Docker'
+    date: "Summer 2025",
+    company: "Saab",
+    role: "Software Developer",
+    type: "Work",
+    description:
+      "Worked on a drone detection application using sensor fusion to combine image detection and sound localization.",
+    technologies: ["C", "Python", "YOLO", "FPGA"],
   },
   {
-    year: '2022-2025',
-    company: 'Uppsala University',
-    role: 'Bachelor of science',
-    desc: 'Started my studies in Civil Engineering In Information Technology.',
-    techStack: 'Java, C, Python, SQL, Linux'
+    date: "2022 - 2025",
+    company: "Uppsala University",
+    role: "Bachelor of Science",
+    type: "Education",
+    description:
+      "Studied Civil Engineering in Information Technology with a broad foundation in software development and computer systems.",
+    technologies: ["Java", "C", "Python", "SQL", "Linux"],
   },
   {
-    year: '2021',
-    period: 'Autumn',
-    company: 'Sylog AB',
-    role: 'Trainee Consultant',
-    desc: 'Worked on a troubleshooting application for Scania trucks and buses using C/C++, improving maintenance efficiency. Optimized code to reduce application CPU usage by 14%.',
-    techStack: 'C, C++, Valgrind'
+    date: "Autumn 2021",
+    company: "Sylog AB",
+    role: "Trainee Consultant",
+    type: "Work",
+    description:
+      "Worked on a troubleshooting application for Scania trucks and buses using C and C++. Optimized the code to reduce CPU usage by 14%.",
+    technologies: ["C", "C++", "Valgrind"],
   },
 ];
 
-
 export default function Timeline() {
-  const [visibleItems, setVisibleItems] = useState<number[]>([]);
-  const [animationsEnabled, setAnimationsEnabled] = useState(true);
-  const [expandedCards, setExpandedCards] = useState<number[]>([]);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const timelineRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const hasVisited = localStorage.getItem("timelineVisited");
-    if (hasVisited) {
-      setAnimationsEnabled(false);
-      setVisibleItems(timelineData.map((_, i) => i));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!animationsEnabled) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const index = Number(entry.target.getAttribute("data-index"));
-          if (entry.isIntersecting && !visibleItems.includes(index)) {
-            setVisibleItems((prev) => [...prev, index]);
-          }
-        });
-      },
-      { root: null, rootMargin: "-40% 0px -50% 0px", threshold: 0 }
-    );
-
-    itemRefs.current.forEach((el) => el && observer.observe(el));
-    return () => {
-      itemRefs.current.forEach((el) => el && observer.unobserve(el));
-    };
-  }, [visibleItems, animationsEnabled]);
-
-  // Mark timeline as visited after animations complete
-  useEffect(() => {
-    if (animationsEnabled && visibleItems.length === timelineData.length) {
-      localStorage.setItem("timelineVisited", "true");
-    }
-  }, [visibleItems, animationsEnabled]);
-
-  // Reset animations if leaving page at top
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      if (window.scrollY < 50) {
-        localStorage.removeItem("timelineVisited");
-      }
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, []);
-
-  // Toggle expanded state for cards
-  const toggleCard = (index: number) => {
-    if (expandedCards.includes(index)) {
-      setExpandedCards(expandedCards.filter((i) => i !== index));
-    } else {
-      setExpandedCards([...expandedCards, index]);
-    }
-  };
-
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
-      <h2 className="text-3xl font-bold mb-12 text-center">My Career Timeline</h2>
+    <div className="mx-auto max-w-4xl px-1 py-16 sm:px-4 sm:py-20">
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-white">Career Timeline</h2>
+        <p className="mt-2 text-sm text-emerald-50/75">
+          Work and education, newest first.
+        </p>
+      </div>
 
-      <div className="relative pb-64 lg:pb-96 pt-32" ref={timelineRef}>
-        {/* Vertical line */}
+      <div className="relative mt-12">
         <div
-          className="absolute left-1/2 -translate-x-1/2 w-1 bg-white top-0 bottom-0"
-          style={{
-            height: `${
-              itemRefs.current.length > 0
-                ? itemRefs.current[timelineData.length - 1]
-                  ? itemRefs.current[timelineData.length - 1]!.offsetTop +
-                    itemRefs.current[timelineData.length - 1]!.offsetHeight / 2
-                  : 0
-                : 1000
-            }px`,
-          }}
-        >
-          <div
-            className={`w-full origin-top transition-all duration-700 ${
-              animationsEnabled ? "bg-gray-800" : "bg-gray-800 h-full"
-            }`}
-            style={{
-              height: animationsEnabled
-                ? `${
-                    visibleItems.length > 0
-                      ? itemRefs.current[visibleItems[visibleItems.length - 1]]!.offsetTop +
-                        itemRefs.current[visibleItems[visibleItems.length - 1]]!.offsetHeight / 2
-                      : 0
-                  }px`
-                : "100%",
-            }}
+          className="absolute bottom-6 left-4 top-4 w-px bg-white/25 md:left-1/2"
+          aria-hidden="true"
+        />
+
+        <div className="relative z-10 mb-10 flex items-center pl-12 md:justify-center md:pl-0">
+          <span
+            className="absolute left-4 top-1/2 h-px w-8 bg-white/40 md:hidden"
+            aria-hidden="true"
           />
+          <span className="rounded-full border border-emerald-300/60 bg-slate-950 px-3 py-1 text-xs font-bold uppercase text-emerald-300 shadow-lg">
+            Now
+          </span>
         </div>
 
-        {/* Cards */}
-        <div className="space-y-56">
+        <div className="space-y-8 md:space-y-12">
           {timelineData.map((item, index) => {
             const isLeft = index % 2 === 0;
-            const isVisible = visibleItems.includes(index);
+            const Icon =
+              item.type === "Education" ? GraduationCap : BriefcaseBusiness;
 
             return (
-              <div
-                key={index}
-                ref={(el) => (itemRefs.current[index] = el)}
-                data-index={index}
-                className={`relative w-full flex ${
-                  isLeft ? "md:justify-start justify-center" : "md:justify-end justify-center"
-                }`}
+              <article
+                key={`${item.company}-${item.date}`}
+                className="relative pl-12 md:grid md:grid-cols-[minmax(0,1fr)_3rem_minmax(0,1fr)] md:pl-0"
               >
                 <div
-                  style={animationsEnabled ? { transitionDelay: `${index * 200}ms` } : {}}
-                  className={`
-                    bg-white text-black p-6 rounded-lg shadow-md w-72 sm:w-80
-                    transform transition-all duration-700 ease-out z-10
-                    cursor-pointer
-                    ${
-                      isVisible
-                        ? isLeft
-                          ? "translate-x-0 opacity-100"
-                          : "ml-auto opacity-100"
-                        : isLeft
-                        ? "md:-translate-x-40 opacity-0"
-                        : "md:translate-x-40 opacity-0"
-                    }
-                  `}
-                  onClick={() => toggleCard(index)}
-                >
-                  <p className="text-sm text-gray-400">{item.year}</p>
-                  {item.period && <p className="text-xs text-gray-400">{item.period}</p>}
-                  <h3 className="text-lg font-semibold">{item.role}</h3>
-                  <p className="flex items-center text-gray-600 gap-2">
-                    <img 
-                      src={`/${item.company.replace(/\s+/g, '').toLowerCase()}.png`} 
-                      alt="Company icon" 
-                      className="w-4 h-4"
-                    />
-                    {item.company}
-                  </p>
-                  <p
-                    className={`mt-2 text-gray-500 transition-all duration-500 cursor-pointer ${
-                      expandedCards.includes(index) ? "max-h-96" : "max-h-24 overflow-hidden"
-                    }`}
-                    onClick={() => {
-                      if (item.desc.length > 70) toggleCard(index);
-                    }}
-                  >
-                    {expandedCards.includes(index)
-                      ? item.desc
-                      : item.desc.length > 70
-                        ? item.desc.slice(0, 70) + "..."
-                        : item.desc
-                    }
-                  </p>
-
-                  {item.desc.length > 70 && (
-                    <span
-                      className="text-purple-500 text-sm mt-1 block cursor-pointer"
-                      onClick={() => toggleCard(index)}
-                    >
-                      {expandedCards.includes(index) ? "Show less" : "Read more"}
-                    </span>
-                  )}
-                    {item.techStack && (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {item.techStack.split(',').map((tech) => (
-                          <span
-                            key={tech.trim()}
-                            className="text-orange-600 border border-orange-400 rounded-full px-3 py-1 text-xs font-semibold"
-                          >
-                            {tech.trim()}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-
-                </div>
+                  className="absolute left-[11px] top-7 z-10 h-3 w-3 rounded-full border-2 border-emerald-200 bg-teal-700 shadow-[0_0_0_5px_rgba(15,118,110,0.9)] md:left-1/2 md:-translate-x-1/2"
+                  aria-hidden="true"
+                />
 
                 <div
-                  className={`absolute left-1/2 -translate-x-1/2 top-8 w-4 h-4 rounded-full
-                    ${isVisible ? "bg-gray-800 scale-100" : "bg-gray-400 scale-0"}
-                    transition-all duration-500 hidden md:block`}
-                />
-              </div>
+                  className={`rounded-lg border border-white/15 bg-slate-950/80 p-5 shadow-xl backdrop-blur-sm transition-colors hover:border-emerald-300/50 sm:p-6 ${
+                    isLeft
+                      ? "md:col-start-1 md:mr-4"
+                      : "md:col-start-3 md:ml-4"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold uppercase text-emerald-300">
+                        {item.date}
+                      </p>
+                      <h3 className="mt-1 text-xl font-semibold text-white">
+                        {item.role}
+                      </h3>
+                    </div>
+
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-white p-1.5">
+                      <img
+                        src={`/${item.company.replace(/\s+/g, "").toLowerCase()}.png`}
+                        alt={`${item.company} logo`}
+                        className="h-full w-full object-contain"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-3 flex items-center gap-2 text-sm font-medium text-slate-200">
+                    <Icon className="h-4 w-4 text-cyan-300" aria-hidden="true" />
+                    <span>{item.company}</span>
+                    <span className="text-slate-500">/</span>
+                    <span className="text-slate-400">{item.type}</span>
+                  </div>
+
+                  <p className="mt-4 text-sm leading-6 text-slate-300">
+                    {item.description}
+                  </p>
+
+                  <ul className="mt-5 flex flex-wrap gap-2" aria-label="Technologies">
+                    {item.technologies.map((technology) => (
+                      <li
+                        key={technology}
+                        className="rounded border border-slate-600 bg-slate-900 px-2 py-1 text-xs font-medium text-slate-300"
+                      >
+                        {technology}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
             );
           })}
         </div>

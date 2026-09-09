@@ -96,7 +96,7 @@ export default function App() {
 
       {/* TIMELINE SECTION */ }
   <section id="section-timeline" className="relative w-[90%] md:w-[60%] sm:mx-auto shadow-lg text-white" style={{ background: "#0f766e" }}>
-    <div className="max-w-4xl mx-auto px-6">
+    <div className="max-w-4xl mx-auto">
       <Timeline />
     </div>
         <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-[0] sm:mx-auto">

@@ -20,11 +20,17 @@ export default function Contacts() {
     {
       name: "Email",
       icon: <Mail className="w-5 h-5" />,
-      href: "mailto:eliasv.benjaminsson@gmail.com",
-      username: "eliasv.benjaminsson@gmail.com",
+      href: decodeHtmlEntities("&#109;&#97;&#105;&#108;&#116;&#111;&colon;&#101;&#108;&#105;&#97;&#115;&#118;&period;&#98;&#101;&#110;&#106;&#97;&#109;&#105;&#110;&#115;&#115;&#111;&#110;&commat;&#103;&#109;&#97;&#105;&#108;&period;&#99;&#111;&#109;"),
+      username: decodeHtmlEntities("&#101;&#108;&#105;&#97;&#115;&#118;&period;&#98;&#101;&#110;&#106;&#97;&#109;&#105;&#110;&#115;&#115;&#111;&#110;&commat;&#103;&#109;&#97;&#105;&#108;&period;&#99;&#111;&#109;"),
       accent: "hover:text-violet-300 hover:border-violet-400/60",
     },
   ];
+    function decodeHtmlEntities(value: string) {
+      const textarea = document.createElement("textarea");
+      textarea.innerHTML = value;
+      return textarea.value;
+    }
+
 
   return (
     <section className="text-white py-16">
