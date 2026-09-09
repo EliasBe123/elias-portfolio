@@ -6,7 +6,7 @@ WORKDIR /app
 # Install frontend dependencies
 COPY apps/web/package*.json ./apps/web/
 WORKDIR /app/apps/web
-RUN npm install
+RUN npm ci
 
 # Copy frontend source
 COPY apps/web ./ 
@@ -26,7 +26,7 @@ COPY apps/api/package*.json ./apps/api/
 WORKDIR /app/apps/api
 RUN apk add --no-cache python3 make g++
 
-RUN npm install
+RUN npm ci
 
 # Copy backend source
 COPY apps/api ./ 
@@ -60,4 +60,3 @@ EXPOSE 3000
 
 # Start backend (which should serve API + frontend from /web/dist)
 CMD ["node", "dist/server.js"]
-
